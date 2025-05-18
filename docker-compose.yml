@@ -1,0 +1,13 @@
+services:
+  event-service:
+    container_name: event-service
+    build: .
+    restart: always
+    tty: true
+    stdin_open: true
+    volumes:
+      - event-service:/app
+
+
+volumes:
+  event-service:
