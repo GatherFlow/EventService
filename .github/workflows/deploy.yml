@@ -19,7 +19,7 @@ jobs:
       - name: Deploy
         run: |
           sshpass -p "${{ secrets.SSH_PASS }}" ssh -o StrictHostKeyChecking=no root@${{ secrets.SSH_HOST }} <<EOF
-            cd ${{ github.event.repository.name }}
+            cd ./services/${{ github.event.repository.name }}
             git reset --hard
             git pull origin main
             cd ..
