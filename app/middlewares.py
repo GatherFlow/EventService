@@ -35,6 +35,8 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             return None
 
     async def dispatch(self, request: Request, call_next):
+        print(request.url)
+
         user_id = await self.get_user_id(request.cookies)
 
         if not user_id:
