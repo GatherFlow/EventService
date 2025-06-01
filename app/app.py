@@ -4,7 +4,6 @@ import fastapi
 import uvicorn
 from contextlib import asynccontextmanager
 
-from aiogram.dispatcher import router
 from sqlalchemy import text
 
 from .endpoint import (
