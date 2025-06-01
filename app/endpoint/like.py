@@ -2,13 +2,13 @@
 import fastapi
 from loguru import logger
 
-from sqlalchemy import select, and_
+from sqlalchemy import select, and_, func
 
 from app.enum import ResponseStatus
-from app.model import Like
+from app.model import Like, Event
 
 from app.schema.request import LikeRequest
-from app.schema.response import LikeResponse
+from app.schema.response import LikeResponse, LikeData
 
 from app.database import get_async_session
 
@@ -49,6 +49,10 @@ async def create_event(
 
                 session.add(like)
 
+            likes = (await session.execute(
+                select(func.count()).select_from(Like).where(Event.id == data.event_id)
+            )).scalar()
+
             await session.commit()
 
     except Exception as err:
@@ -59,4 +63,8 @@ async def create_event(
             description=str(err)
         )
 
-    return LikeResponse()
+    return LikeResponse(
+        data=LikeData(
+            likes=likes
+        )
+    )

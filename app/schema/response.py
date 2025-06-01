@@ -20,6 +20,10 @@ class GetEventTicketData(BaseModel):
     stock: int
 
 
+class LikeData(BaseModel):
+    likes: int
+
+
 class GetEventData(BaseModel):
     id: int
     title: str
@@ -70,3 +74,5 @@ class GetManyEventsResponse(BaseModel):
 class LikeResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
+
+    data: LikeData | None = None
