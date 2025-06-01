@@ -1,3 +1,4 @@
+from http.client import responses
 
 import aiohttp
 from loguru import logger
@@ -35,7 +36,9 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             return None
 
     async def dispatch(self, request: Request, call_next):
-        print(request.url)
+        if str(request.url).endswith("/docs"):
+            response = await call_next(request)
+            return response
 
         user_id = await self.get_user_id(request.cookies)
 
