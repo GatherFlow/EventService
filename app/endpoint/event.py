@@ -148,9 +148,9 @@ async def create_event(
                     Tag.id.in_(map(lambda x: x.tag_id, event_tags))
                 )
             )).scalars().all()
-            likes = await session.execute(
+            likes = (await session.execute(
                 select(func.count()).select_from(Like).where(event.id == event.id)
-            ).scalar()
+            )).scalar()
 
     except Exception as err:
         logger.exception(err)
