@@ -4,9 +4,13 @@ import fastapi
 import uvicorn
 from contextlib import asynccontextmanager
 
+from sqlalchemy import text
+
 from .endpoint import event_router
 from .updater import Updater
 from .middlewares import CheckAuthMiddleware
+
+from app.database import get_async_session
 
 from config import get_settings
 
@@ -15,6 +19,10 @@ from config import get_settings
 async def lifespan(app: fastapi.FastAPI):
     updater = Updater()
     task = asyncio.create_task(updater.start())
+
+    async with get_async_session() as session:
+        await session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
+        await session.commit()
 
     yield
 
