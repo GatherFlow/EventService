@@ -25,16 +25,6 @@ services:
     ports:
       - "5433:5432"
 
-  manticore:
-    image: manticoresearch/manticore
-    container_name: manticore
-    ports:
-      - "9306:9306"
-      - "9308:9308"
-    volumes:
-      - manticore_data:/var/lib/manticore
-    restart: unless-stopped
-
 volumes:
   event-service:
   event-db:

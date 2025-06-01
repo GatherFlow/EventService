@@ -28,3 +28,7 @@ class GetEventRequest(BaseModel):
 
 class GetMyEventsRequest(BaseModel):
     pass
+
+
+class SearchEventRequest(BaseModel):
+    query: str

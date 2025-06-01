@@ -1,8 +1,7 @@
 
 from .model import BaseModel
 
-from .event import Event
-from .tag import EventTag, Tag
+from .event import Event, EventTag, Tag
 from .album import EventAlbum
 from .restriction import EventRestriction
 from .settings import EventSettings

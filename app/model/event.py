@@ -1,9 +1,10 @@
 
 from datetime import datetime
-from sqlalchemy import Integer, Enum, DateTime, String
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy import Integer, Enum, DateTime, String, ForeignKey
+from sqlalchemy.orm import relationship, mapped_column, Mapped
 
 from app.enum import EventFormat
+
 from . import BaseModel
 
 
@@ -30,4 +31,35 @@ class Event(BaseModel):
     )
     announced_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
+    )
+
+    tags: Mapped[list["Tag"]] = relationship(
+        "Tag",
+        secondary="EventTag",
+        back_populates="events"
+    )
+
+
+class EventTag(BaseModel):
+    __tablename__ = 'EventTag'
+
+    event_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey('Event.id'), nullable=False
+    )
+    tag_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey('Tag.id'), nullable=False
+    )
+
+
+class Tag(BaseModel):
+    __tablename__ = 'Tag'
+
+    name: Mapped[str] = mapped_column(
+        String(100), nullable=False
+    )
+
+    events: Mapped[list["Event"]] = relationship(
+        "Event",
+        secondary="EventTag",
+        back_populates="tags"
     )

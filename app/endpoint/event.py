@@ -1,19 +1,19 @@
-from enum import member
 
 import fastapi
 from loguru import logger
-from sqlalchemy import update, select
-from sqlalchemy.orm import Mapped
+from sqlalchemy import update, select, or_, func, desc
 
 from app.enum import MemberRole, ResponseStatus
-from app.model import Event, Member, EventSettings
+from app.model import Event, Member, EventSettings, Tag, EventTag
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest,
-    GetEventRequest, GetMyEventsRequest)
+    GetEventRequest, GetMyEventsRequest,
+    SearchEventRequest
+)
 from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
-    GetEventResponse, GetMyEventsResponse
+    GetEventResponse, GetManyEventsResponse
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
@@ -44,8 +44,7 @@ async def create_event(
                 duration=data.duration,
                 format=data.format,
                 meeting_link=data.meeting_link,
-                location=data.location,
-                announced_at=data.announced_at
+                location=data.location
             )
             session.add(event)
             await session.flush()
@@ -137,13 +136,13 @@ async def create_event(
 
 @event_router.get(
     path="/my",
-    response_model=GetMyEventsResponse,
+    response_model=GetManyEventsResponse,
     description="Get my events",
 )
 async def create_event(
     data: GetMyEventsRequest,
     request: fastapi.Request,
-) -> GetMyEventsResponse:
+) -> GetManyEventsResponse:
 
     try:
         async with get_async_session() as session:
@@ -162,9 +161,9 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return GetMyEventsResponse(status=ResponseStatus.unexpected_error)
+        return GetManyEventsResponse(status=ResponseStatus.unexpected_error)
 
-    return GetMyEventsResponse(
+    return GetManyEventsResponse(
         data=[
             GetEventData(**event.__dict__)
             for event in events
@@ -174,12 +173,34 @@ async def create_event(
 
 @event_router.get(
     path="/search",
-    response_model=CreateEventResponse,
-    description="Create new event",
+    response_model=GetManyEventsResponse,
+    description="Search events",
 )
 async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+    data: SearchEventRequest
+) -> GetManyEventsResponse:
 
-    pass
+    try:
+        async with get_async_session() as session:
+            events = (await session.execute(
+                select(Event)
+                .outerjoin(EventTag, Event.id == EventTag.event_id)
+                .outerjoin(Tag, Tag.id == EventTag.tag_id)
+                .where(
+                    or_(
+                        func.lower(Event.title).op('%')(data.query),
+                        func.lower(Event.description).op('%')(data.query),
+                    )
+                )
+            )).scalars().unique().all()
+
+    except Exception as err:
+        logger.exception(err)
+        return GetManyEventsResponse(status=ResponseStatus.unexpected_error)
+
+    return GetManyEventsResponse(
+        data=[
+            GetEventData(**event.__dict__)
+            for event in events
+        ]
+    )

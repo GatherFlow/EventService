@@ -44,7 +44,7 @@ class GetEventResponse(BaseModel):
     data: GetEventData | None = None
 
 
-class GetMyEventsResponse(BaseModel):
+class GetManyEventsResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
