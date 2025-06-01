@@ -17,12 +17,12 @@ from config import get_settings
 
 @asynccontextmanager
 async def lifespan(app: fastapi.FastAPI):
-    updater = Updater()
-    task = asyncio.create_task(updater.start())
-
     async with get_async_session() as session:
         await session.execute(text("CREATE EXTENSION IF NOT EXISTS pg_trgm;"))
         await session.commit()
+
+    updater = Updater()
+    task = asyncio.create_task(updater.start())
 
     yield
 
