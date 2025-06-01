@@ -191,7 +191,6 @@ async def create_event(
     description="Get my events",
 )
 async def create_event(
-    data: GetMyEventsRequest,
     request: fastapi.Request,
 ) -> GetManyEventsResponse:
 
