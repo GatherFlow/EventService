@@ -34,6 +34,7 @@ class GetEventData(BaseModel):
     format: EventFormat
     meeting_link: str | None = None
     location: str | None = None
+    starting_time: int | None = None
     announced_at: int | None = None
 
 

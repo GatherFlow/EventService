@@ -29,6 +29,9 @@ class Event(BaseModel):
     location: Mapped[str] = mapped_column(
         String(500), nullable=True, default=None
     )
+    starting_time: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=True, default=None
+    )
     announced_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=True, default=None
     )

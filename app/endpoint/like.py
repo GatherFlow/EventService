@@ -18,26 +18,25 @@ from app.mono import mono_client
 from config import get_settings
 
 
-member_router = fastapi.APIRouter(prefix="member")
+like_router = fastapi.APIRouter(prefix="member")
 
 
-CREATE_EVENT_RESPONSES: dict[int | str, dict[str, Any]] = {
-    404: {
-        "description": "error",
-        "content": {
-            "application/json": {
-                "example": CreateEventResponse(
-                    status=CreateEventStatus.unexpected_error,
-                    description=f"Unexpected error occurred",
-                ).model_dump()
-            }
-        }
-    }
-}
+@like_router.post(
+    path="/add",
+    response_model=CreateEventResponse,
+    responses=CREATE_EVENT_RESPONSES,
+    description="Create new event",
+)
+async def create_event(
+    data: CreateEventRequest,
+    response: fastapi.Response,
+) -> CreateEventResponse:
+
+    pass
 
 
-@member_router.post(
-    path="/",
+@like_router.post(
+    path="/remove",
     response_model=CreateEventResponse,
     responses=CREATE_EVENT_RESPONSES,
     description="Create new event",

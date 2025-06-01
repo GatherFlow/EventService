@@ -10,6 +10,7 @@ class CreateEventRequest(BaseModel):
     format: EventFormat
     meeting_link: str | None = None
     location: str | None = None
+    starting_time: int | None = None
 
 
 class UpdateEventRequest(BaseModel):
@@ -20,6 +21,7 @@ class UpdateEventRequest(BaseModel):
     format: EventFormat | None = None
     meeting_link: str | None = None
     location: str | None = None
+    starting_time: int | None = None
 
 
 class GetEventRequest(BaseModel):
