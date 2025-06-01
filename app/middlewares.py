@@ -36,7 +36,8 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             return None
 
     async def dispatch(self, request: Request, call_next):
-        if str(request.url).endswith("/docs"):
+        dest = str(request.url).split("/")[-1]
+        if dest in ["docs", "openapi.json"]:
             response = await call_next(request)
             return response
 
