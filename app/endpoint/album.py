@@ -1,5 +1,8 @@
 
+import os
 import fastapi
+from fastapi.responses import FileResponse
+
 from uuid import uuid4
 from loguru import logger
 
@@ -15,6 +18,22 @@ from app.database import get_async_session
 
 
 album_router = fastapi.APIRouter(prefix="/album")
+
+
+@album_router.get(
+    path="/{album_id}",
+    response_class=FileResponse,
+    description="Get image"
+)
+async def create_event(
+    album_id: str,
+):
+
+    file_path = f"./resources/images/{album_id}"
+    if not os.path.isdir(file_path):
+        file_path = f"./resources/images/404.jpg"
+
+    return FileResponse(path=file_path, media_type="image/jpeg", filename=f"image.jpg")
 
 
 @album_router.post(
