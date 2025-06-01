@@ -208,7 +208,6 @@ async def create_event(
                     )
                 )
             )).scalars().all()
-            print([[owner.user_id, owner.role] for owner in owners])
             event_ids = map(lambda x: x.event_id, owners)
 
             events = (await session.execute(

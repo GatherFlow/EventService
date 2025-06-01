@@ -27,7 +27,7 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
                     cookies=cookies,
                     raise_for_status=True
                 ) as response:
-                    self.log.debug(f"{response}")
+                    self.log.debug(f"{response} -> {await response.text()}")
 
                     data = await response.json()
                     return data["id"]
