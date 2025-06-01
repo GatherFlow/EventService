@@ -5,18 +5,17 @@ import os
 from fastapi.responses import FileResponse
 
 
-images_router = fastapi.APIRouter(prefix="/images")
+images_router = fastapi.APIRouter(prefix="/image")
 
 
 @images_router.get(
     path="/{album_id}",
-    response_model=FileResponse,
-    description="Like/unlike event"
+    response_class=FileResponse,
+    description="Get image"
 )
 async def create_event(
     album_id: str,
-    request: fastapi.Request
-) -> FileResponse:
+):
 
     file_path = f"./resources/images/{album_id}"
     if not os.path.isdir(file_path):

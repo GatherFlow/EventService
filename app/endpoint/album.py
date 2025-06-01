@@ -20,7 +20,7 @@ album_router = fastapi.APIRouter(prefix="/album")
 @album_router.post(
     path="/add",
     response_model=AddAlbumResponse,
-    description="Create new event",
+    description="Add/Replace album image",
 )
 async def create_event(
     data: AddAlbumRequest
@@ -61,6 +61,6 @@ async def create_event(
 
     return AddAlbumResponse(
         data=AddAlbumData(
-            url=f"https://bots.innova.ua/image/{album.img}"
+            url=f"https://bots.innova.ua/api/event/image/{album.img}"
         )
     )
