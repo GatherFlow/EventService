@@ -208,10 +208,14 @@ async def create_event(
                     )
                 )
             )).scalars().all()
+            print(owners)
+            event_ids = map(lambda x: x.event_id, owners)
 
             events = (await session.execute(
                 select(Event)
-                .where(Event.id.in_(map(lambda x: x.event_id, owners)))
+                .where(
+                    Event.id.in_(event_ids)
+                )
             )).scalars().all()
 
             for event in events:
