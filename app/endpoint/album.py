@@ -1,47 +1,66 @@
 
-from typing import Any
-
 import fastapi
-from datetime import datetime, timedelta
+from uuid import uuid4
+from loguru import logger
 
-from aiomonobnk.types import InvoiceCreated
+from sqlalchemy import select, and_
 
-from app.enum import CreateEventStatus
-from app.model import Event
+from app.model import EventAlbum
+from app.enum import ResponseStatus
 
-from app.schema.request import CreateEventRequest
-from app.schema.response import CreateEventResponse
+from app.schema.request import AddAlbumRequest
+from app.schema.response import AddAlbumResponse, AddAlbumData
 
 from app.database import get_async_session
-from app.mono import mono_client
-
-from config import get_settings
 
 
-member_router = fastapi.APIRouter(prefix="/album")
+album_router = fastapi.APIRouter(prefix="/album")
 
 
-@member_router.post(
+@album_router.post(
     path="/add",
-    response_model=CreateEventResponse,
+    response_model=AddAlbumResponse,
     description="Create new event",
 )
 async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+    data: AddAlbumRequest
+) -> AddAlbumResponse:
 
-    pass
+    try:
+        async with get_async_session() as session:
+            album = (await session.execute(
+                select(EventAlbum)
+                .where(
+                    and_(
+                        EventAlbum.event_id == data.event_id,
+                    )
+                )
+            )).scalars().one_or_none()
 
+            if album:
+                await session.delete(album)
 
-@member_router.post(
-    path="/remove",
-    response_model=CreateEventResponse,
-    description="Create new event",
-)
-async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+            album = EventAlbum(
+                event_id=data.event_id,
+                img=uuid4().hex
+            )
 
-    pass
+            with open(f"resources/images/{album.img}", "wb") as f:
+                f.write(data.file)
+
+            session.add(album)
+
+            await session.commit()
+
+    except Exception as err:
+        logger.exception(err)
+        return AddAlbumResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return AddAlbumResponse(
+        data=AddAlbumData(
+            url=f"https://bots.innova.ua/image/{album.img}"
+        )
+    )

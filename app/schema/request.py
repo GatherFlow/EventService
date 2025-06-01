@@ -38,3 +38,8 @@ class SearchEventRequest(BaseModel):
 
 class LikeRequest(BaseModel):
     event_id: int
+
+
+class AddAlbumRequest(BaseModel):
+    event_id: int
+    file: str

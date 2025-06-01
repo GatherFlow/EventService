@@ -67,7 +67,10 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return UpdateEventResponse(status=ResponseStatus.unexpected_error)
+        return UpdateEventResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
 
     return CreateEventResponse(
         data=CreateEventData(
@@ -104,7 +107,10 @@ async def update_event(
 
     except Exception as err:
         logger.exception(err)
-        return UpdateEventResponse(status=ResponseStatus.unexpected_error)
+        return UpdateEventResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
 
     return UpdateEventResponse(
         data=UpdateEventData(
@@ -148,7 +154,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
         likes=likes,
         bought=0,
         tags=list(map(lambda x: x.name, tags)),
-        album=list(map(lambda x: x.url, album)),
+        album=list(map(lambda x: f"https://bots.innova.ua/image/{x.img}", album)),
         event_tickets=[
             GetEventTicketData(
                 id=event_ticket.id,
@@ -168,17 +174,20 @@ async def gen_response_event(event: Event, session: AsyncSession):
     description="Get event",
 )
 async def create_event(
-    data: GetEventRequest,
+    id: int
 ) -> CreateEventResponse:
 
     try:
         async with get_async_session() as session:
-            event = await session.get(Event, data.id)
+            event = await session.get(Event, id)
             response_data = await gen_response_event(event, session)
 
     except Exception as err:
         logger.exception(err)
-        return GetEventResponse(status=ResponseStatus.unexpected_error)
+        return GetEventResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
 
     return GetEventResponse(
         data=response_data
@@ -221,7 +230,10 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return GetManyEventsResponse(status=ResponseStatus.unexpected_error)
+        return GetManyEventsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
 
     return GetManyEventsResponse(
         data=response_data
@@ -234,7 +246,7 @@ async def create_event(
     description="Search events",
 )
 async def create_event(
-    data: SearchEventRequest
+    query: str
 ) -> GetManyEventsResponse:
 
     response_data = []
@@ -247,8 +259,8 @@ async def create_event(
                 .outerjoin(Tag, Tag.id == EventTag.tag_id)
                 .where(
                     or_(
-                        func.lower(Event.title).op('%')(data.query),
-                        func.lower(Event.description).op('%')(data.query),
+                        func.lower(Event.title).op('%')(query),
+                        func.lower(Event.description).op('%')(query),
                     )
                 )
             )).scalars().unique().all()
@@ -258,7 +270,10 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return GetManyEventsResponse(status=ResponseStatus.unexpected_error)
+        return GetManyEventsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
 
     return GetManyEventsResponse(
         data=response_data

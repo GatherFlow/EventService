@@ -43,6 +43,10 @@ class GetEventData(BaseModel):
     tickets: list[GetEventTicketData] = []
 
 
+class AddAlbumData(BaseModel):
+    url: str
+
+
 class CreateEventResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
@@ -76,3 +80,10 @@ class LikeResponse(BaseModel):
     description: str | None = None
 
     data: LikeData | None = None
+
+
+class AddAlbumResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: AddAlbumData | None = None
