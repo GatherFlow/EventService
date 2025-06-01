@@ -1,12 +1,37 @@
 
+import asyncio
 import fastapi
 import uvicorn
-from .hello import hello_router
+from contextlib import asynccontextmanager
+
+from .endpoint import event_router
+from .updater import Updater
+from .middlewares import CheckAuthMiddleware
+
+from config import get_settings
 
 
-app = fastapi.FastAPI()
-app.include_router(hello_router)
+@asynccontextmanager
+async def lifespan(app: fastapi.FastAPI):
+    updater = Updater()
+    task = asyncio.create_task(updater.start())
+
+    yield
+
+    # to avoid killing task
+    print(task)
+
+
+app = fastapi.FastAPI(
+    title="Swagger",
+    root_path=get_settings().app.path,
+    lifespan=lifespan
+)
+app.add_middleware(CheckAuthMiddleware)
+
+app.include_router(event_router)
 
 
 def start_app():
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    settings = get_settings()
+    uvicorn.run(app, host=settings.app.host, port=settings.app.port)

@@ -1,0 +1,51 @@
+
+from pydantic import BaseModel, Field
+
+from app.enum import ResponseStatus, EventFormat
+
+
+class CreateEventData(BaseModel):
+    id: int
+
+
+class UpdateEventData(BaseModel):
+    id: int
+
+
+class CreateEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: CreateEventData | None = None
+
+
+class UpdateEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: UpdateEventData | None = None
+
+
+class GetEventData(BaseModel):
+    id: int
+    title: str
+    description: str
+    duration: int
+    format: EventFormat
+    meeting_link: str | None = None
+    location: str | None = None
+    announced_at: int | None = None
+
+
+class GetEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetEventData | None = None
+
+
+class GetMyEventsResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetEventData] = Field(default_factory=list)
