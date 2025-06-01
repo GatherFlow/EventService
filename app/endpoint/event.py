@@ -150,7 +150,7 @@ async def create_event(
             )).scalars().all()
             likes = await session.execute(
                 select(func.count()).select_from(Like).where(event.id == event.id)
-            )
+            ).scalar()
 
     except Exception as err:
         logger.exception(err)
