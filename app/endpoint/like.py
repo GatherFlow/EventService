@@ -13,7 +13,7 @@ from app.schema.response import LikeResponse, LikeData
 from app.database import get_async_session
 
 
-like_router = fastapi.APIRouter(prefix="member")
+like_router = fastapi.APIRouter(prefix="/like")
 
 
 @like_router.post(
