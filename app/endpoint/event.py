@@ -1,7 +1,7 @@
 
 import fastapi
 from loguru import logger
-from sqlalchemy import update, select, or_, func
+from sqlalchemy import update, select, or_, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import MemberRole, ResponseStatus
@@ -202,8 +202,10 @@ async def create_event(
             owners = (await session.execute(
                 select(Member)
                 .where(
-                    Member.user_id == request.state.user_id,
-                    Member.role == MemberRole.owner
+                    and_(
+                        Member.user_id == request.state.user_id,
+                        Member.role == MemberRole.owner
+                    )
                 )
             )).scalars().all()
 

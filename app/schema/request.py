@@ -34,3 +34,11 @@ class GetMyEventsRequest(BaseModel):
 
 class SearchEventRequest(BaseModel):
     query: str
+
+
+class AddLikeRequest(BaseModel):
+    event_id: int
+
+
+class RemoveLikeRequest(BaseModel):
+    event_id: int

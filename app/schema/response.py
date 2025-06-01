@@ -12,20 +12,6 @@ class UpdateEventData(BaseModel):
     id: int
 
 
-class CreateEventResponse(BaseModel):
-    status: ResponseStatus = ResponseStatus.ok
-    description: str | None = None
-
-    data: CreateEventData | None = None
-
-
-class UpdateEventResponse(BaseModel):
-    status: ResponseStatus = ResponseStatus.ok
-    description: str | None = None
-
-    data: UpdateEventData | None = None
-
-
 class GetEventTicketData(BaseModel):
     id: int
     title: str
@@ -53,6 +39,20 @@ class GetEventData(BaseModel):
     tickets: list[GetEventTicketData] = []
 
 
+class CreateEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: CreateEventData | None = None
+
+
+class UpdateEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: UpdateEventData | None = None
+
+
 class GetEventResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
@@ -65,3 +65,13 @@ class GetManyEventsResponse(BaseModel):
     description: str | None = None
 
     data: list[GetEventData] = Field(default_factory=list)
+
+
+class AddLikeRequest(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+
+class RemoveLikeRequest(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
