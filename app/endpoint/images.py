@@ -1,70 +1,25 @@
 
 import fastapi
-from loguru import logger
+import os
 
-from sqlalchemy import select, and_, func
-
-from app.enum import ResponseStatus
-from app.model import Like, Event
-
-from app.schema.request import LikeRequest
-from app.schema.response import LikeResponse, LikeData
-
-from app.database import get_async_session
+from fastapi.responses import FileResponse
 
 
-like_router = fastapi.APIRouter(prefix="/like")
+images_router = fastapi.APIRouter(prefix="/images")
 
 
-@like_router.post(
-    path="/",
-    response_model=LikeResponse,
+@images_router.get(
+    path="/{album_id}",
+    response_model=FileResponse,
     description="Like/unlike event"
 )
 async def create_event(
-    data: LikeRequest,
+    album_id: str,
     request: fastapi.Request
-) -> LikeResponse:
+) -> FileResponse:
 
-    try:
-        async with get_async_session() as session:
-            like = (await session.execute(
-                select(Like)
-                .where(
-                    and_(
-                        Like.event_id == data.event_id,
-                        Like.user_id == request.state.user_id,
-                    )
-                )
-            )).scalars().one_or_none()
+    file_path = f"./resources/images/{album_id}"
+    if not os.path.isdir(file_path):
+        file_path = f"./resources/images/404.jpg"
 
-            if like:
-                await session.delete(like)
-
-            else:
-                like = Like(
-                    event_id=data.event_id,
-                    user_id=request.state.user_id,
-                )
-
-                session.add(like)
-
-            likes = (await session.execute(
-                select(func.count()).select_from(Like).where(Event.id == data.event_id)
-            )).scalar()
-
-            await session.commit()
-
-    except Exception as err:
-        logger.exception(err)
-
-        return LikeResponse(
-            status=ResponseStatus.unexpected_error,
-            description=str(err)
-        )
-
-    return LikeResponse(
-        data=LikeData(
-            likes=likes
-        )
-    )
+    return FileResponse(path=file_path, media_type="image/jpeg", filename=f"image.jpg")

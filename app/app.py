@@ -8,7 +8,7 @@ from sqlalchemy import text
 
 from .endpoint import (
     event_router, like_router,
-    album_router
+    album_router, images_router
 )
 from .updater import Updater
 from .middlewares import CheckAuthMiddleware
@@ -43,6 +43,7 @@ app.add_middleware(CheckAuthMiddleware)
 app.include_router(event_router)
 app.include_router(like_router)
 app.include_router(album_router)
+app.include_router(images_router)
 
 
 def start_app():
