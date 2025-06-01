@@ -2,16 +2,15 @@
 import fastapi
 from loguru import logger
 
-from sqlalchemy import select, and_, delete
+from sqlalchemy import select, and_
 
 from app.enum import ResponseStatus
-from app.model import Event, Like
+from app.model import Like
 
 from app.schema.request import LikeRequest
 from app.schema.response import LikeResponse
 
 from app.database import get_async_session
-from config import get_settings
 
 
 like_router = fastapi.APIRouter(prefix="member")
@@ -20,7 +19,7 @@ like_router = fastapi.APIRouter(prefix="member")
 @like_router.post(
     path="/",
     response_model=LikeResponse,
-    description="Like/unlike event",
+    description="Like/unlike event"
 )
 async def create_event(
     data: LikeRequest,
