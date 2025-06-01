@@ -4,9 +4,12 @@ import fastapi
 import uvicorn
 from contextlib import asynccontextmanager
 
+from aiogram.dispatcher import router
 from sqlalchemy import text
 
-from .endpoint import event_router
+from .endpoint import (
+    event_router, like_router
+)
 from .updater import Updater
 from .middlewares import CheckAuthMiddleware
 
@@ -38,6 +41,7 @@ app = fastapi.FastAPI(
 app.add_middleware(CheckAuthMiddleware)
 
 app.include_router(event_router)
+app.include_router(like_router)
 
 
 def start_app():
