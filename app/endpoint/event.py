@@ -1,10 +1,10 @@
 
 import fastapi
 from loguru import logger
-from sqlalchemy import update, select, or_, func, desc
+from sqlalchemy import update, select, or_, func
 
 from app.enum import MemberRole, ResponseStatus
-from app.model import Event, Member, EventSettings, Tag, EventTag
+from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest,
@@ -17,7 +17,7 @@ from app.schema.response import (
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
-    GetEventData
+    GetEventData, GetEventTicketData
 )
 
 from app.database import get_async_session
@@ -124,13 +124,56 @@ async def create_event(
     try:
         async with get_async_session() as session:
             event = await session.get(Event, data.id)
+            event_tickets = (await session.execute(
+                select(EventTicket)
+                .where(
+                    EventTicket.event_id == event.id
+                )
+            )).scalars().all()
+            album = (await session.execute(
+                select(EventAlbum)
+                .where(
+                    EventAlbum.event_id == event.id
+                )
+            )).scalars().all()
+            event_tags = (await session.execute(
+                select(EventTag)
+                .where(
+                    EventTag.event_id == event.id
+                )
+            )).scalars().all()
+            tags = (await session.execute(
+                select(Tag)
+                .where(
+                    Tag.id.in_(map(lambda x: x.tag_id, event_tags))
+                )
+            )).scalars().all()
+            likes = await session.execute(
+                select(func.count()).select_from(Like).where(event.id == event.id)
+            )
 
     except Exception as err:
         logger.exception(err)
         return GetEventResponse(status=ResponseStatus.unexpected_error)
 
     return GetEventResponse(
-        data=GetEventData(**event.__dict__)
+        data=GetEventData(
+            **event.__dict__,
+            likes=likes,
+            bought=0,
+            tags=list(map(lambda x: x.name, tags)),
+            album=list(map(lambda x: x.url, album)),
+            event_tickets=[
+                GetEventTicketData(
+                    id=event_ticket.id,
+                    title=event_ticket.title,
+                    description=event_ticket.description,
+                    price=event_ticket.price,
+                    stock=event_ticket.stock
+                )
+                for event_ticket in event_tickets
+            ]
+        )
     )
 
 

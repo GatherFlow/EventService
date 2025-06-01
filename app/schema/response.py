@@ -26,6 +26,14 @@ class UpdateEventResponse(BaseModel):
     data: UpdateEventData | None = None
 
 
+class GetEventTicketData(BaseModel):
+    id: int
+    title: str
+    description: str
+    price: float
+    stock: int
+
+
 class GetEventData(BaseModel):
     id: int
     title: str
@@ -36,6 +44,13 @@ class GetEventData(BaseModel):
     location: str | None = None
     starting_time: int | None = None
     announced_at: int | None = None
+
+    likes: int | None = None
+    bought: int | None = None
+
+    tags: list[str] = []
+    album: list[str] = []
+    tickets: list[GetEventTicketData] = []
 
 
 class GetEventResponse(BaseModel):
