@@ -1,20 +1,16 @@
 
-from typing import Any
-
 import fastapi
-from datetime import datetime, timedelta
+from loguru import logger
 
-from aiomonobnk.types import InvoiceCreated
+from sqlalchemy import select, and_, delete
 
-from app.enum import CreateEventStatus
-from app.model import Event
+from app.enum import ResponseStatus
+from app.model import Event, Like
 
-from app.schema.request import CreateEventRequest
-from app.schema.response import CreateEventResponse
+from app.schema.request import LikeRequest
+from app.schema.response import LikeResponse
 
 from app.database import get_async_session
-from app.mono import mono_client
-
 from config import get_settings
 
 
@@ -22,28 +18,46 @@ like_router = fastapi.APIRouter(prefix="member")
 
 
 @like_router.post(
-    path="/add",
-    response_model=CreateEventResponse,
-    responses=CREATE_EVENT_RESPONSES,
-    description="Create new event",
+    path="/",
+    response_model=LikeResponse,
+    description="Like/unlike event",
 )
 async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+    data: LikeRequest,
+    request: fastapi.Request
+) -> LikeResponse:
 
-    pass
+    try:
+        async with get_async_session() as session:
+            like = (await session.execute(
+                select(Like)
+                .where(
+                    and_(
+                        Like.event_id == data.event_id,
+                        Like.user_id == request.state.user_id,
+                    )
+                )
+            )).scalars().one_or_none()
 
+            if like:
+                await session.delete(like)
 
-@like_router.post(
-    path="/remove",
-    response_model=CreateEventResponse,
-    responses=CREATE_EVENT_RESPONSES,
-    description="Create new event",
-)
-async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+            else:
+                like = Like(
+                    event_id=data.event_id,
+                    user_id=request.state.user_id,
+                )
 
-    pass
+                session.add(like)
+
+            await session.commit()
+
+    except Exception as err:
+        logger.exception(err)
+
+        return LikeResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return LikeResponse()

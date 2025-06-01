@@ -67,11 +67,6 @@ class GetManyEventsResponse(BaseModel):
     data: list[GetEventData] = Field(default_factory=list)
 
 
-class AddLikeRequest(BaseModel):
-    status: ResponseStatus = ResponseStatus.ok
-    description: str | None = None
-
-
-class RemoveLikeRequest(BaseModel):
+class LikeResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None

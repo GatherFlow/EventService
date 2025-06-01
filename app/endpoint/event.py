@@ -186,7 +186,7 @@ async def create_event(
 
 
 @event_router.get(
-    path="/my",
+    path="/mine",
     response_model=GetManyEventsResponse,
     description="Get my events",
 )

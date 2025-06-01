@@ -36,9 +36,5 @@ class SearchEventRequest(BaseModel):
     query: str
 
 
-class AddLikeRequest(BaseModel):
-    event_id: int
-
-
-class RemoveLikeRequest(BaseModel):
+class LikeRequest(BaseModel):
     event_id: int
