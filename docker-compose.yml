@@ -28,4 +28,3 @@ services:
 volumes:
   event-service:
   event-db:
-  manticore_data:
