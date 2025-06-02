@@ -11,6 +11,6 @@ class Like(BaseModel):
     event_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('Event.id'), nullable=False
     )
-    user_id: Mapped[int] = mapped_column(
-        Integer, nullable=False
+    user_id: Mapped[str] = mapped_column(
+        String(200), nullable=False
     )
