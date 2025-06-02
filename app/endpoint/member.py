@@ -96,7 +96,7 @@ async def gen_users_dict(user_ids: list[str], cookies: dict) -> GetMemberData:
     async with aiohttp.ClientSession() as session:
         async with session.get(
             url=f"{get_settings().services.user}/users/many",
-            params={"ids": ','.join(user_ids)},
+            params={"ids": user_ids},
             cookies=cookies,
             raise_for_status=False
         ) as response:
