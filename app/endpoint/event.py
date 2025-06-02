@@ -333,7 +333,13 @@ async def get_user_events(
             ))
             event_ticket_ids = list(map(lambda x: x.event_ticket_id, tickets))
 
-            events =
+            events = (await session.execute(
+                select(Event)
+                .where(Event.id.in_(event_ticket_ids))
+            ))
+
+            for event in events:
+                acquired.append(await gen_response_event(event, session))
 
     except Exception as err:
         logger.exception(err)
