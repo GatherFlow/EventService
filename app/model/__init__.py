@@ -9,3 +9,4 @@ from .event_ticket import EventTicket
 from .like import Like
 from .member import Member
 from .ticket import Ticket
+from .search_query import SearchQuery

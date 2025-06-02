@@ -7,7 +7,7 @@ from sqlalchemy import update, select, or_, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import MemberRole, ResponseStatus
-from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum, Ticket
+from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum, Ticket, SearchQuery
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest
@@ -16,13 +16,14 @@ from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
     GetEventResponse, GetManyEventsResponse,
     DeleteEventResponse, GetMyStatsResponse,
-    GetEventStatsResponse, GetUserEventsResponse
+    GetEventStatsResponse, GetUserEventsResponse,
+    GetSearchHistoryResponse, DropSearchHistoryResponse
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
     GetEventData, GetEventTicketData,
     GetMyStatsData, GetEventStatsData,
-    GetUserEventsData
+    GetUserEventsData, GetSearchHistoryData
 )
 
 from app.database import get_async_session
@@ -394,6 +395,40 @@ async def search_events(
 
     return GetManyEventsResponse(
         data=response_data
+    )
+
+
+@event_router.get(
+    path="/search/history",
+    response_model=GetSearchHistoryResponse,
+    description="Get search history",
+)
+async def get_search_events(
+    request: fastapi.Request
+) -> GetSearchHistoryResponse:
+
+    try:
+        async with get_async_session() as session:
+            queries = (await session.execute(
+                select(SearchQuery)
+                .where(SearchQuery.user_id == request.state.user_id)
+            )).scalars().all()
+
+    except Exception as err:
+        logger.exception(err)
+        return GetSearchHistoryResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetSearchHistoryResponse(
+        data=[
+            GetSearchHistoryData(
+                id=query.id,
+                value=query.value
+            )
+            for query in queries
+        ]
     )
 
 

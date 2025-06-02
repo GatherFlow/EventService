@@ -5,12 +5,12 @@ from sqlalchemy.orm import mapped_column, Mapped
 from . import BaseModel
 
 
-class Ticket(BaseModel):
-    __tablename__ = 'Ticket'
+class SearchQuery(BaseModel):
+    __tablename__ = 'SearchQuery'
 
-    event_ticket_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('EventTicket.id', ondelete="CASCADE"), nullable=False
-    )
     user_id: Mapped[str] = mapped_column(
         String(200), nullable=False
+    )
+    value: Mapped[str] = mapped_column(
+        String(500), nullable=False
     )

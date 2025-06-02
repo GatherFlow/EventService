@@ -360,3 +360,20 @@ class GetUserEventsResponse(BaseModel):
     description: str | None = None
 
     data: GetUserEventsData | None = None
+
+
+class GetSearchHistoryData(BaseModel):
+    id: int
+    value: str
+
+
+class GetSearchHistoryResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetSearchHistoryData] = Field(default_factory=list)
+
+
+class DropSearchHistoryResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None

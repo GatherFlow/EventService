@@ -36,8 +36,15 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             return None
 
     async def dispatch(self, request: Request, call_next):
-        dest = str(request.url).split("/")[-1]
+        url_parts = str(request.url).split("/")
+
+        dest = url_parts[-1]
         if dest in ["docs", "openapi.json"]:
+            response = await call_next(request)
+            return response
+
+        dest_path = str(request.url).split("/")[-2]
+        if dest_path in ["album"]:
             response = await call_next(request)
             return response
 
