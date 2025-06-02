@@ -11,7 +11,7 @@ class EventRestriction(BaseModel):
     __tablename__ = 'EventRestriction'
 
     event_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('Event.id'), nullable=False, ondelete="CASCADE"
+        Integer, ForeignKey('Event.id', ondelete="CASCADE"), nullable=False
     )
     action: Mapped[RestrictionAction] = mapped_column(
         Enum(RestrictionAction), nullable=False
