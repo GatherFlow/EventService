@@ -153,7 +153,7 @@ async def get_restriction(
     response_model=GetManyRestrictionResponse,
     description="Get many restriction",
 )
-async def get_restriction(
+async def get_many_restriction(
     event_id: int
 ) -> GetManyRestrictionResponse:
 

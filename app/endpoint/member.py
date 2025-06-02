@@ -113,7 +113,7 @@ async def gen_users_dict(user_ids, cookies: dict) -> GetMemberData:
     response_model=GetMemberResponse,
     description="Get member",
 )
-async def create_event(
+async def create_member(
     id: int,
     request: fastapi.Request
 ) -> GetMemberResponse:
@@ -154,7 +154,7 @@ async def create_event(
     response_model=GetManyMemberResponse,
     description="Get many members",
 )
-async def create_event(
+async def create_many_member(
     event_id: int,
     request: fastapi.Request
 ) -> GetManyMemberResponse:
