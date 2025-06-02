@@ -2,6 +2,7 @@
 from datetime import datetime
 
 import fastapi
+import re
 from loguru import logger
 from sqlalchemy import update, select, or_, func, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -165,7 +166,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
         **event_dict,
         likes=likes,
         bought=0,
-        tags=list(map(lambda x: x.name, tags)),
+        tags=list(map(lambda x: f"#{x.name}", tags)),
         album=list(map(lambda x: f"https://bots.innova.ua/api/event/album/{x.img}", album)),
         event_tickets=[
             GetEventTicketData(
@@ -367,6 +368,14 @@ async def search_events(
     query: str
 ) -> GetManyEventsResponse:
 
+    tags = re.findall(r"#(\w+)", query)
+    tags = [
+        tag[1:] if tag.startswith("#") else tag
+        for tag in tags
+    ]
+
+    query = re.sub(r"#\w+", "", query).strip()
+
     response_data = []
 
     try:
@@ -376,9 +385,15 @@ async def search_events(
                 .outerjoin(EventTag, Event.id == EventTag.event_id)
                 .outerjoin(Tag, Tag.id == EventTag.tag_id)
                 .where(
-                    or_(
-                        func.lower(Event.title).op('%')(query),
-                        func.lower(Event.description).op('%')(query),
+                    and_(
+                        or_(
+                            func.lower(Event.title).op('%')(query),
+                            func.lower(Event.description).op('%')(query),
+                        ),
+                        or_(
+                            func.lower(Tag.name).op('%')(tag)
+                            for tag in tags
+                        ),
                     )
                 )
             )).scalars().unique().all()
