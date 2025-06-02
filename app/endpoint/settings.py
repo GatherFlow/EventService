@@ -37,13 +37,12 @@ async def create_event(
             )).scalars().first()
 
             if not settings.is_announced:
-                settings.is_gathering = True
                 settings.is_announced = not settings.is_announced
 
                 await session.execute(
                     update(EventSettings)
                     .where(EventSettings.id == settings.id)
-                    .values(is_announced=settings.is_announced, is_gathering=settings.is_gathering)
+                    .values(is_announced=settings.is_announced, is_gathering=settings)
                     .execution_options(synchronize_session="fetch")
                 )
 
