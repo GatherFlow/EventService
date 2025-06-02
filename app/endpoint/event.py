@@ -1,9 +1,9 @@
 
 from datetime import datetime
-
 import fastapi
 import re
 from loguru import logger
+
 from sqlalchemy import update, select, or_, func, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -407,7 +407,7 @@ async def search_events(
                         or_(
                             func.lower(Tag.name).op('%')(tag)
                             for tag in tags
-                        ),
+                        )
                     )
                 )
             )).scalars().unique().all()
