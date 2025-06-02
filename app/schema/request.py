@@ -100,5 +100,5 @@ class UpdateRestrictionRequest(BaseModel):
 
 
 class CreateTicketRequest(BaseModel):
-    event_id: int
+    event_ticket_id: int
     user_id: str

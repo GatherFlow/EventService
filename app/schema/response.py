@@ -296,7 +296,7 @@ class CreateTicketData(BaseModel):
 
 class GetTicketData(BaseModel):
     id: int
-    event_id: int
+    event_ticket_id: int
     user_id: str
 
 
