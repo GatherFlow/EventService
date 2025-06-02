@@ -9,7 +9,7 @@ class Ticket(BaseModel):
     __tablename__ = 'Ticket'
 
     event_ticket_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('Event.id', ondelete="CASCADE"), nullable=False
+        Integer, ForeignKey('EventTicket.id', ondelete="CASCADE"), nullable=False
     )
     user_id: Mapped[str] = mapped_column(
         String(200), nullable=False
