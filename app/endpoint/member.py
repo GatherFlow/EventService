@@ -98,7 +98,9 @@ async def gen_users_dict(user_ids, cookies: dict) -> GetMemberData:
             url=f"{get_settings().services.user}/users/many",
             params={"ids": user_ids},
             cookies=cookies,
+            raise_for_status=False
         ) as response:
+            logger.debug(f"{response} -> {await response.text()}")
 
             data = await response.json()
 
