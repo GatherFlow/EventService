@@ -112,7 +112,7 @@ async def update_event(
                 .where(Event.id == data.id)
                 .values(**{
                     key: datetime.fromtimestamp(data_dict[key]) if key == "starting_time" and data_dict[key] else data_dict[key]
-                    for key in data_dict if key not in ["id"] and data_dict.get(key)
+                    for key in data_dict if key not in ["id", "tags"] and data_dict.get(key)
                 })
                 .execution_options(synchronize_session="fetch")
             )
