@@ -1,7 +1,7 @@
 
-from pydantic import BaseModel, Field
+from app.enum import ResponseStatus, EventFormat, MemberRole, RestrictionAction
 
-from app.enum import ResponseStatus, EventFormat, MemberRole
+from pydantic import BaseModel, Field
 
 
 class CreateEventData(BaseModel):
@@ -94,6 +94,9 @@ class GetMemberData(BaseModel):
     event_id: int
     user_id: str
     role: MemberRole
+    first_name: str
+    last_name: str
+    avatar: str
 
 
 class UpdateTagData(BaseModel):
@@ -103,6 +106,21 @@ class UpdateTagData(BaseModel):
 class SearchTagData(BaseModel):
     id: int
     name: str
+
+
+class CreateRestrictionData(BaseModel):
+    id: int
+
+
+class UpdateRestrictionData(BaseModel):
+    id: int
+
+
+class GetRestrictionData(BaseModel):
+    id: int
+    event_id: int
+    action: RestrictionAction
+    value: dict
 
 
 class CreateEventResponse(BaseModel):
@@ -241,3 +259,36 @@ class SearchTagResponse(BaseModel):
     description: str | None = None
 
     data: list[SearchTagData] = Field(default_factory=list)
+
+
+class CreateRestrictionResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[CreateRestrictionData] = Field(default_factory=list)
+
+
+class UpdateRestrictionResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[UpdateRestrictionData] = Field(default_factory=list)
+
+
+class GetRestrictionResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetRestrictionData | None = None
+
+
+class GetManyRestrictionResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetRestrictionData] = Field(default_factory=list)
+
+
+class DeleteRestrictionResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None

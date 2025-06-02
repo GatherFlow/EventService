@@ -1,4 +1,5 @@
 
+import aiohttp
 import fastapi
 from loguru import logger
 
@@ -12,6 +13,8 @@ from app.schema.response import CreateMemberResponse, UpdateMemberResponse, GetM
 from app.schema.response import CreateMemberData
 
 from app.database import get_async_session
+
+from config import get_settings
 
 
 member_router = fastapi.APIRouter(prefix="/member")
@@ -89,13 +92,30 @@ async def update_member(
     )
 
 
+async def gen_users_dict(user_ids, cookies: dict) -> GetMemberData:
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            url=f"{get_settings()}/users/many",
+            params={"ids": user_ids},
+            cookies=cookies,
+        ) as response:
+
+            data = await response.json()
+
+    return {
+        row["id"]: row
+        for row in data
+    }
+
+
 @member_router.get(
     path="/",
     response_model=GetMemberResponse,
     description="Get member",
 )
 async def create_event(
-    id: int
+    id: int,
+    request: fastapi.Request
 ) -> GetMemberResponse:
 
     try:
@@ -107,6 +127,9 @@ async def create_event(
                 )
             )).scalars().first()
 
+        users_dict = await gen_users_dict(user_ids=[member.user_id], cookies=request.cookies)
+        user = users_dict[member.user_id]
+
     except Exception as err:
         logger.exception(err)
         return GetMemberResponse(
@@ -115,7 +138,14 @@ async def create_event(
         )
 
     return GetMemberResponse(
-        data=GetMemberData(**member.__dict__)
+        data=GetMemberData(
+            **{
+                **member.__dict__,
+                "first_name": user["firstName"],
+                "last_name": user["lastName"],
+                "avatar": user["avatar"]
+            }
+        )
     )
 
 
@@ -125,7 +155,8 @@ async def create_event(
     description="Get many members",
 )
 async def create_event(
-    event_id: int
+    event_id: int,
+    request: fastapi.Request
 ) -> GetManyMemberResponse:
 
     try:
@@ -134,6 +165,11 @@ async def create_event(
                 select(Member)
                 .where(Member.event_id == event_id)
             )).scalars().all()
+
+            users_dict = await gen_users_dict(
+                user_ids=list(map(lambda x: x.user_id, members)),
+                cookies=request.cookies
+            )
 
     except Exception as err:
         logger.exception(err)
@@ -144,7 +180,14 @@ async def create_event(
 
     return GetManyMemberResponse(
         data=[
-            GetMemberData(**member.__dict__)
+            GetMemberData(
+                **{
+                    **member.__dict__,
+                    "first_name": users_dict[member.user_id]["firstName"],
+                    "last_name": users_dict[member.user_id]["lastName"],
+                    "avatar": users_dict[member.user_id]["avatar"]
+                }
+            )
             for member in members
         ]
     )

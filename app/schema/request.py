@@ -97,7 +97,3 @@ class UpdateRestrictionRequest(BaseModel):
     id: int
     action: RestrictionAction | None = None
     value: dict | None = None
-
-
-class DeleteRestrictionRequest(BaseModel):
-    id: int

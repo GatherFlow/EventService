@@ -10,7 +10,7 @@ from .endpoint import (
     event_router, like_router,
     album_router, settings_router,
     ticket_router, member_router,
-    tag_router
+    tag_router, restriction_router
 )
 from .updater import Updater
 from .middlewares import CheckAuthMiddleware
@@ -49,6 +49,7 @@ app.include_router(settings_router)
 app.include_router(ticket_router)
 app.include_router(member_router)
 app.include_router(tag_router)
+app.include_router(restriction_router)
 
 
 def start_app():
