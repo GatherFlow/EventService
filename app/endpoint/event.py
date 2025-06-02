@@ -10,12 +10,12 @@ from app.enum import MemberRole, ResponseStatus
 from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum
 
 from app.schema.request import (
-    CreateEventRequest, UpdateEventRequest,
-    GetEventRequest
+    CreateEventRequest, UpdateEventRequest
 )
 from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
-    GetEventResponse, GetManyEventsResponse
+    GetEventResponse, GetManyEventsResponse,
+    DeleteEventResponse
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
@@ -198,28 +198,27 @@ async def get_event(
 
 @event_router.delete(
     path="/",
-    response_model=GetEventResponse,
+    response_model=DeleteEventResponse,
     description="Get event",
 )
 async def delete_event(
     id: int
-) -> GetEventResponse:
+) -> DeleteEventResponse:
 
     try:
         async with get_async_session() as session:
             event = await session.get(Event, id)
-            response_data = await gen_response_event(event, session)
+            await session.delete(event)
+            await session.commit()
 
     except Exception as err:
         logger.exception(err)
-        return GetEventResponse(
+        return DeleteEventResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetEventResponse(
-        data=response_data
-    )
+    return DeleteEventResponse()
 
 
 @event_router.get(
