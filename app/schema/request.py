@@ -1,5 +1,5 @@
 
-from app.enum import EventFormat, MemberRole
+from app.enum import EventFormat, MemberRole, RestrictionAction
 from pydantic import BaseModel
 
 
@@ -64,11 +64,11 @@ class CreateTicketRequest(BaseModel):
 
 class UpdateTicketRequest(BaseModel):
     id: int
-    title: str = None
-    description: str = None
-    price: float = None
-    amount: int = None
-    stock: int = None
+    title: str | None = None
+    description: str | None = None
+    price: float | None = None
+    amount: int | None = None
+    stock: int | None = None
 
 
 class CreateMemberRequest(BaseModel):
@@ -85,3 +85,19 @@ class UpdateMemberRequest(BaseModel):
 class UpdateTagRequest(BaseModel):
     event_id: int
     tags: list[str]
+
+
+class CreateRestrictionRequest(BaseModel):
+    event_id: int
+    action: RestrictionAction
+    value: dict
+
+
+class UpdateRestrictionRequest(BaseModel):
+    id: int
+    action: RestrictionAction | None = None
+    value: dict | None = None
+
+
+class DeleteRestrictionRequest(BaseModel):
+    id: int

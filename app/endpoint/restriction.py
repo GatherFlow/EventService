@@ -10,7 +10,7 @@ from app.schema.response import CreateEventResponse
 from app.database import get_async_session
 
 
-restrictions_router = fastapi.APIRouter(prefix="restricitons")
+restrictions_router = fastapi.APIRouter(prefix="/restricitons")
 
 
 @restrictions_router.post(
@@ -30,10 +30,45 @@ async def create_restriction(
     response_model=CreateEventResponse,
     description="Update restriction",
 )
-async def create_event(
+async def update_restriction(
     data: CreateEventRequest
 ) -> CreateEventResponse:
 
     pass
 
+
+@restrictions_router.delete(
+    path="/delete",
+    response_model=CreateEventResponse,
+    description="Delete restriction",
+)
+async def delete_restriction(
+    data: CreateEventRequest
+) -> CreateEventResponse:
+
+    pass
+
+
+@restrictions_router.get(
+    path="/",
+    response_model=CreateEventResponse,
+    description="Get restriction",
+)
+async def get_restriction(
+    id: int
+) -> CreateEventResponse:
+
+    pass
+
+
+@restrictions_router.get(
+    path="/many",
+    response_model=CreateEventResponse,
+    description="Get many restriction",
+)
+async def get_restriction(
+    event_id: int
+) -> CreateEventResponse:
+
+    pass
 

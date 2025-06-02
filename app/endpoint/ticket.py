@@ -88,8 +88,7 @@ async def get_ticket(
     description="Update ticket",
 )
 async def create_event(
-    data: UpdateTicketRequest,
-    response: fastapi.Response,
+    data: UpdateTicketRequest
 ) -> UpdateTicketResponse:
 
     try:
