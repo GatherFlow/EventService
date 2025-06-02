@@ -147,7 +147,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
             )
         )).scalars().all()
         likes = (await session.execute(
-            select(func.count()).select_from(Like).where(event.id == event.id)
+            select(func.count()).select_from(Like).where(Like.event_id == event.id)
         )).scalar()
 
     event_dict = event.__dict__
