@@ -100,7 +100,7 @@ async def gen_users_dict(user_ids: list[str], cookies: dict) -> GetMemberData:
             cookies=cookies,
             raise_for_status=False
         ) as response:
-            logger.debug(f"{response} -> {params} -> {await response.text()}")
+            logger.debug(f"{response} -> {await response.text()}")
 
             data = await response.json()
 
