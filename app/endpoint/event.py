@@ -88,7 +88,6 @@ async def create_event(
 )
 async def update_event(
     data: UpdateEventRequest,
-    response: fastapi.Response,
 ) -> UpdateEventResponse:
 
     try:

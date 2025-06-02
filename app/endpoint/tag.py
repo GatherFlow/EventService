@@ -21,21 +21,6 @@ from config import get_settings
 member_router = fastapi.APIRouter(prefix="member")
 
 
-CREATE_EVENT_RESPONSES: dict[int | str, dict[str, Any]] = {
-    404: {
-        "description": "error",
-        "content": {
-            "application/json": {
-                "example": CreateEventResponse(
-                    status=CreateEventStatus.unexpected_error,
-                    description=f"Unexpected error occurred",
-                ).model_dump()
-            }
-        }
-    }
-}
-
-
 @member_router.post(
     path="/update",
     response_model=CreateEventResponse,

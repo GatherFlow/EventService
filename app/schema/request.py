@@ -1,5 +1,5 @@
 
-from app.enum import EventFormat
+from app.enum import EventFormat, MemberRole
 from pydantic import BaseModel
 
 
@@ -69,3 +69,14 @@ class UpdateTicketRequest(BaseModel):
     price: float = None
     amount: int = None
     stock: int = None
+
+
+class CreateMemberRequest(BaseModel):
+    event_id: int
+    user_id: str
+    role: MemberRole
+
+
+class UpdateMemberRequest(BaseModel):
+    id: int
+    role: MemberRole = None

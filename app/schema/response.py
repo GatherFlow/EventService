@@ -1,7 +1,7 @@
 
 from pydantic import BaseModel, Field
 
-from app.enum import ResponseStatus, EventFormat
+from app.enum import ResponseStatus, EventFormat, MemberRole
 
 
 class CreateEventData(BaseModel):
@@ -79,6 +79,21 @@ class GetSettingsData(BaseModel):
     is_gathering: bool
     is_announced: bool
     is_dropped: bool
+
+
+class CreateMemberData(BaseModel):
+    id: int
+
+
+class UpdateMemberData(BaseModel):
+    id: int
+
+
+class GetMemberData(BaseModel):
+    id: int
+    event_id: int
+    user_id: str
+    role: MemberRole
 
 
 class CreateEventResponse(BaseModel):
@@ -175,3 +190,31 @@ class GetSettingsResponse(BaseModel):
     description: str | None = None
 
     data: GetSettingsData | None = None
+
+
+class CreateMemberResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: CreateMemberData | None = None
+
+
+class UpdateMemberResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: UpdateMemberData | None = None
+
+
+class GetMemberResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetMemberData | None = None
+
+
+class GetManyMemberResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetMemberData] = Field(default_factory=list)
