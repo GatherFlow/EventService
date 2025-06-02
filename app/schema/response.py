@@ -43,6 +43,24 @@ class GetEventData(BaseModel):
     tickets: list[GetEventTicketData] = []
 
 
+class CreateTicketData(BaseModel):
+    id: int
+
+
+class UpdateTicketData(BaseModel):
+    id: int
+
+
+class GetTicketData(BaseModel):
+    id: int
+    event_id: int
+    title: str
+    description: str
+    price: float
+    amount: int
+    stock: int
+
+
 class AddAlbumData(BaseModel):
     url: str
 
@@ -53,6 +71,14 @@ class AnnouncedEventData(BaseModel):
 
 class StopGatheringEventData(BaseModel):
     is_gathering: bool
+
+
+class GetSettingsData(BaseModel):
+    id: int
+    event_id: int
+    is_gathering: bool
+    is_announced: bool
+    is_dropped: bool
 
 
 class CreateEventResponse(BaseModel):
@@ -114,3 +140,38 @@ class StopGatheringEventResponse(BaseModel):
     description: str | None = None
 
     data: StopGatheringEventData | None = None
+
+
+class CreateTicketResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: CreateTicketData | None = None
+
+
+class UpdateTicketResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: UpdateTicketData | None = None
+
+
+class GetTicketResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetTicketData | None = None
+
+
+class GetManyTicketResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetTicketData] = Field(default_factory=list)
+
+
+class GetSettingsResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetSettingsData | None = None

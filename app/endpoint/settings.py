@@ -9,8 +9,8 @@ from app.enum import ResponseStatus
 from app.model import EventSettings, Event
 
 from app.schema.request import AnnounceEventRequest, StopGatheringEventRequest
-from app.schema.response import AnnouncedEventResponse, StopGatheringEventResponse
-from app.schema.response import AnnouncedEventData, StopGatheringEventData
+from app.schema.response import AnnouncedEventResponse, StopGatheringEventResponse, GetSettingsResponse
+from app.schema.response import AnnouncedEventData, StopGatheringEventData, GetSettingsData
 
 from app.database import get_async_session
 
@@ -18,12 +18,42 @@ from app.database import get_async_session
 settings_router = fastapi.APIRouter(prefix="/settings")
 
 
+@settings_router.get(
+    path="/",
+    response_model=GetSettingsResponse,
+    description="Get settings",
+)
+async def get_settings(
+    event_id: int
+) -> GetSettingsResponse:
+
+    try:
+        async with get_async_session() as session:
+            settings = (await session.execute(
+                select(EventSettings)
+                .where(
+                    EventSettings.event_id == event_id
+                )
+            )).scalars().first()
+
+    except Exception as err:
+        logger.exception(err)
+        return GetSettingsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetSettingsResponse(
+        data=GetSettingsData(**settings.__dict__)
+    )
+
+
 @settings_router.post(
     path="/announce",
     response_model=AnnouncedEventResponse,
     description="Announce event",
 )
-async def create_event(
+async def announce_event(
     data: AnnounceEventRequest,
 ) -> AnnouncedEventResponse:
 
@@ -78,7 +108,7 @@ async def create_event(
     response_model=StopGatheringEventResponse,
     description="Gather/Ungather event",
 )
-async def create_event(
+async def gather_event(
     data: StopGatheringEventRequest,
 ) -> StopGatheringEventResponse:
 

@@ -1,64 +1,71 @@
 
-from typing import Any
-
 import fastapi
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 
-from aiomonobnk.types import InvoiceCreated
-
-from app.enum import CreateEventStatus
+from app.enum import ResponseStatus
 from app.model import Event
 
-from app.schema.request import CreateEventRequest
-from app.schema.response import CreateEventResponse
+from app.schema.request import CreateTicketRequest, UpdateTicketRequest
+from app.schema.response import (
+    CreateTicketResponse, UpdateTicketResponse,
+    CreateTicketData, UpdateTicketData,
+    GetTicketResponse, GetManyTicketResponse,
+    GetTicketData
+)
 
 from app.database import get_async_session
-from app.mono import mono_client
-
-from config import get_settings
 
 
 ticket_router = fastapi.APIRouter(prefix="ticket")
 
 
-CREATE_EVENT_RESPONSES: dict[int | str, dict[str, Any]] = {
-    404: {
-        "description": "error",
-        "content": {
-            "application/json": {
-                "example": CreateEventResponse(
-                    status=CreateEventStatus.unexpected_error,
-                    description=f"Unexpected error occurred",
-                ).model_dump()
-            }
-        }
-    }
-}
-
-
 @ticket_router.post(
-    path="/update",
-    response_model=CreateEventResponse,
-    responses=CREATE_EVENT_RESPONSES,
-    description="Create new event",
+    path="/",
+    response_model=CreateTicketResponse,
+    description="Create new ticket",
 )
 async def create_event(
-    data: CreateEventRequest,
+    data: CreateTicketRequest,
     response: fastapi.Response,
-) -> CreateEventResponse:
+) -> CreateTicketResponse:
 
     pass
 
 
 @ticket_router.get(
     path="/",
-    response_model=CreateEventResponse,
-    responses=CREATE_EVENT_RESPONSES,
+    response_model=GetTicketResponse,
     description="Create new event",
 )
 async def create_event(
-    data: CreateEventRequest,
+    id: int,
     response: fastapi.Response,
-) -> CreateEventResponse:
+) -> GetTicketResponse:
+
+    pass
+
+
+@ticket_router.get(
+    path="/",
+    response_model=GetTicketResponse,
+    description="Create new event",
+)
+async def create_event(
+    id: int,
+    response: fastapi.Response,
+) -> GetTicketResponse:
+
+    pass
+
+
+@ticket_router.put(
+    path="/update",
+    response_model=UpdateTicketResponse,
+    description="Update ticket",
+)
+async def create_event(
+    data: UpdateTicketRequest,
+    response: fastapi.Response,
+) -> UpdateTicketResponse:
 
     pass

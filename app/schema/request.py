@@ -51,3 +51,21 @@ class AnnounceEventRequest(BaseModel):
 
 class StopGatheringEventRequest(BaseModel):
     event_id: int
+
+
+class CreateTicketRequest(BaseModel):
+    event_id: int
+    title: str
+    description: str
+    price: float
+    amount: int
+    stock: int
+
+
+class UpdateTicketRequest(BaseModel):
+    id: int
+    title: str = None
+    description: str = None
+    price: float = None
+    amount: int = None
+    stock: int = None
