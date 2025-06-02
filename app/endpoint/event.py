@@ -180,7 +180,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
         **event_dict,
         likes=likes,
         bought=0,
-        tags=list(map(lambda x: f"#{x.name}", tags)),
+        tags=list(map(lambda x: f"{x.name}", tags)),
         album=list(map(lambda x: f"https://bots.innova.ua/api/event/album/{x.img}", album)),
         event_tickets=[
             GetEventTicketData(
