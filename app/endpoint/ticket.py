@@ -11,6 +11,7 @@ from app.schema.request import CreateTicketRequest, UpdateTicketRequest
 from app.schema.response import (
     CreateTicketResponse, UpdateTicketResponse,
     CreateTicketData, UpdateTicketData,
+    DeleteTicketResponse,
     GetTicketResponse, GetManyTicketResponse,
     GetTicketData
 )
@@ -80,6 +81,31 @@ async def get_ticket(
     return GetTicketResponse(
         data=GetTicketData(**ticket.__dict__)
     )
+
+
+@ticket_router.delete(
+    path="/delete",
+    response_model=DeleteTicketResponse,
+    description="Delete event ticket",
+)
+async def delete_ticket(
+    id: int,
+) -> DeleteTicketResponse:
+
+    try:
+        async with get_async_session() as session:
+            event = await session.get(EventTicket, id)
+            await session.delete(event)
+            await session.commit()
+
+    except Exception as err:
+        logger.exception(err)
+        return DeleteTicketResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return DeleteTicketResponse()
 
 
 @ticket_router.put(

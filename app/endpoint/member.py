@@ -20,7 +20,7 @@ from config import get_settings
 member_router = fastapi.APIRouter(prefix="/member")
 
 
-@member_router.put(
+@member_router.post(
     path="/create",
     response_model=CreateMemberResponse,
     description="Create new member",

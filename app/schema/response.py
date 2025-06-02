@@ -292,3 +292,8 @@ class GetManyRestrictionResponse(BaseModel):
 class DeleteRestrictionResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
+
+
+class DeleteTicketResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
