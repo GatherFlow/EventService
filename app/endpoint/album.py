@@ -1,4 +1,5 @@
 
+import base64
 import os
 import fastapi
 from fastapi.responses import FileResponse
@@ -37,7 +38,7 @@ async def create_event(
 
 
 @album_router.post(
-    path="/add",
+    path="/",
     response_model=AddAlbumResponse,
     description="Add/Replace album image",
 )
@@ -65,7 +66,7 @@ async def create_event(
             )
 
             with open(f"resources/images/{album.img}", "wb") as f:
-                f.write(data.file)
+                f.write(base64.b64decode(data.file))
 
             session.add(album)
 
