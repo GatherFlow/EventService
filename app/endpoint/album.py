@@ -26,7 +26,7 @@ album_router = fastapi.APIRouter(prefix="/album")
     response_class=FileResponse,
     description="Get image"
 )
-async def create_event(
+async def get_album(
     album_id: str,
 ):
 
@@ -42,7 +42,7 @@ async def create_event(
     response_model=AddAlbumResponse,
     description="Add/Replace album image",
 )
-async def create_event(
+async def add_album(
     data: AddAlbumRequest
 ) -> AddAlbumResponse:
 

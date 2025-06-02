@@ -9,7 +9,7 @@ class EventSettings(BaseModel):
     __tablename__ = 'EventSettings'
 
     event_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('Event.id'), nullable=False
+        Integer, ForeignKey('Event.id'), nullable=False, ondelete="CASCADE"
     )
     is_gathering: Mapped[bool] = mapped_column(
         BOOLEAN, nullable=False, default=False

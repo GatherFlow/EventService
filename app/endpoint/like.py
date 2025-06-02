@@ -21,7 +21,7 @@ like_router = fastapi.APIRouter(prefix="/like")
     response_model=LikeResponse,
     description="Like/unlike event"
 )
-async def create_event(
+async def add_like(
     data: LikeRequest,
     request: fastapi.Request
 ) -> LikeResponse:

@@ -172,7 +172,33 @@ async def gen_response_event(event: Event, session: AsyncSession):
     response_model=GetEventResponse,
     description="Get event",
 )
-async def create_event(
+async def get_event(
+    id: int
+) -> GetEventResponse:
+
+    try:
+        async with get_async_session() as session:
+            event = await session.get(Event, id)
+            response_data = await gen_response_event(event, session)
+
+    except Exception as err:
+        logger.exception(err)
+        return GetEventResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetEventResponse(
+        data=response_data
+    )
+
+
+@event_router.delete(
+    path="/",
+    response_model=GetEventResponse,
+    description="Get event",
+)
+async def delete_event(
     id: int
 ) -> GetEventResponse:
 
@@ -198,7 +224,7 @@ async def create_event(
     response_model=GetManyEventsResponse,
     description="Get my events",
 )
-async def create_event(
+async def get_mine_events(
     request: fastapi.Request,
 ) -> GetManyEventsResponse:
 
@@ -244,7 +270,7 @@ async def create_event(
     response_model=GetManyEventsResponse,
     description="Search events",
 )
-async def create_event(
+async def search_events(
     query: str
 ) -> GetManyEventsResponse:
 

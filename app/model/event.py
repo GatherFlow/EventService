@@ -47,10 +47,10 @@ class EventTag(BaseModel):
     __tablename__ = 'EventTag'
 
     event_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('Event.id'), nullable=False
+        Integer, ForeignKey('Event.id'), nullable=False, ondelete="CASCADE"
     )
     tag_id: Mapped[int] = mapped_column(
-        Integer, ForeignKey('Tag.id'), nullable=False
+        Integer, ForeignKey('Tag.id'), nullable=False, ondelete="CASCADE"
     )
 
 
