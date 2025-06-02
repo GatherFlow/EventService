@@ -48,6 +48,7 @@ class AddAlbumData(BaseModel):
 
 
 class AnnouncedEventData(BaseModel):
+    is_gathering: bool
     is_announced: bool
 
 
