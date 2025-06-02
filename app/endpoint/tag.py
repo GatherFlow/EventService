@@ -1,14 +1,17 @@
 
 import fastapi
+import re
+
 from loguru import logger
 
-from sqlalchemy import select, delete
+from sqlalchemy import select, delete, func
 
 from app.enum import ResponseStatus
 from app.model import Tag, EventTag
 
 from app.schema.request import UpdateTagRequest
-from app.schema.response import UpdateTagResponse, SearchTagResponse, UpdateTagData, GetTicketResponse
+from app.schema.response import UpdateTagResponse, SearchTagResponse
+from app.schema.response import UpdateTagData, SearchTagData
 
 from app.database import get_async_session
 
@@ -89,41 +92,41 @@ async def create_event(
 
 @tag_router.get(
     path="/search",
-    response_model=GetTicketResponse,
-    description="Search events",
+    response_model=SearchTagResponse,
+    description="Search tags",
 )
-async def search_events(
+async def search_tags(
     query: str
-) -> GetTicketResponse:
-
-    parts = query.split("# ")
-
-    """
-    qwe #qwe #q
-    """
+) -> SearchTagResponse:
 
     response_data = []
+
+    query_tags = re.findall(r'#\S+', query)
+    if not len(query_tags):
+        return SearchTagResponse(
+            data=response_data
+        )
+
+    last_query_tag = query_tags[-1][1:]
 
     try:
         async with get_async_session() as session:
             tags = (await session.execute(
                 select(Tag)
-                .where(
-                    func.lower(Event.title).op('%')(query)
-                )
+                .where(Tag.name.op('%')(last_query_tag))
             )).scalars().unique().all()
 
-            for event in events:
-                response_data.append(tag)
+            for tag in tags:
+                response_data.append(SearchTagData(**tag.__dict__))
 
     except Exception as err:
         logger.exception(err)
-        return GetTicketResponse(
+        return SearchTagResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetTicketResponse(
+    return SearchTagResponse(
         data=response_data
     )
 
