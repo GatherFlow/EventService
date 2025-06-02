@@ -1,4 +1,6 @@
 
+from datetime import datetime
+
 import fastapi
 from loguru import logger
 from sqlalchemy import update, select, or_, func, and_
@@ -44,7 +46,8 @@ async def create_event(
                 duration=data.duration,
                 format=data.format,
                 meeting_link=data.meeting_link,
-                location=data.location
+                location=data.location,
+                starting_time=datetime.fromtimestamp(data.starting_time)
             )
             session.add(event)
             await session.flush()
@@ -96,7 +99,7 @@ async def update_event(
                 update(Event)
                 .where(Event.id == data.id)
                 .values(**{
-                    key: data_dict[key]
+                    key: data_dict[key] if key != "starting_time" else datetime.fromtimestamp(data_dict[key])
                     for key in data_dict if key not in ["id"] and data_dict.get(key)
                 })
                 .execution_options(synchronize_session="fetch")
