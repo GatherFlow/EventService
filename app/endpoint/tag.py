@@ -58,7 +58,7 @@ async def update_tags(tags: list[str], event_id: int, session: AsyncSession) -> 
 
     for tag_name in tag_names:
         event_tag = EventTag(
-            tag_id=tags_dict[tag_name],
+            tag_id=tags_dict[tag_name].id,
             event_id=event_id
         )
         event_tags.append(event_tag)
