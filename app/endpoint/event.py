@@ -7,7 +7,7 @@ from sqlalchemy import update, select, or_, func, and_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import MemberRole, ResponseStatus
-from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum
+from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum, Ticket
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest
@@ -16,12 +16,13 @@ from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
     GetEventResponse, GetManyEventsResponse,
     DeleteEventResponse, GetMyStatsResponse,
-    GetEventStatsResponse
+    GetEventStatsResponse, GetUserEventsResponse
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
     GetEventData, GetEventTicketData,
-    GetMyStatsData, GetEventStatsData
+    GetMyStatsData, GetEventStatsData,
+    GetUserEventsData
 )
 
 from app.database import get_async_session
@@ -277,18 +278,41 @@ async def get_mine_events(
 
 
 @event_router.get(
-    path="/liked",
-    response_model=GetManyEventsResponse,
-    description="Get liked events",
+    path="/user",
+    response_model=GetUserEventsResponse,
+    description="Get owned, appreciated and acquired events",
 )
-async def get_liked_events(
+async def get_user_events(
     request: fastapi.Request,
-) -> GetManyEventsResponse:
+) -> GetUserEventsResponse:
 
-    response_data = []
+    owned = []
+    appreciated = []
+    acquired = []
 
     try:
         async with get_async_session() as session:
+            owners = (await session.execute(
+                select(Member)
+                .where(
+                    and_(
+                        Member.user_id == request.state.user_id,
+                        Member.role == MemberRole.owner
+                    )
+                )
+            )).scalars().all()
+            event_ids = map(lambda x: x.event_id, owners)
+
+            events = (await session.execute(
+                select(Event)
+                .where(
+                    Event.id.in_(event_ids)
+                )
+            )).scalars().all()
+
+            for event in events:
+                owned.append(await gen_response_event(event, session))
+
             likes = (await session.execute(
                 select(Like)
                 .where(Like.user_id == request.state.user_id)
@@ -301,7 +325,15 @@ async def get_liked_events(
             )).scalars().all()
 
             for event in events:
-                response_data.append(await gen_response_event(event, session))
+                appreciated.append(await gen_response_event(event, session))
+
+            tickets = (await session.execute(
+                select(Ticket)
+                .where(Ticket.user_id == request.state.user_id)
+            ))
+            event_ticket_ids = list(map(lambda x: x.event_ticket_id, tickets))
+
+            events =
 
     except Exception as err:
         logger.exception(err)
@@ -310,8 +342,12 @@ async def get_liked_events(
             description=str(err)
         )
 
-    return GetManyEventsResponse(
-        data=response_data
+    return GetUserEventsResponse(
+        data=GetUserEventsData(
+            owned=owned,
+            appreciated=appreciated,
+            acquired=acquired
+        )
     )
 
 

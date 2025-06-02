@@ -347,3 +347,16 @@ class GetEventStatsResponse(BaseModel):
     description: str | None = None
 
     data: GetEventStatsData | None = None
+
+
+class GetUserEventsData(BaseModel):
+    owned: list[GetEventData] = Field(default_factory=list)
+    appreciated: list[GetEventData] = Field(default_factory=list)
+    acquired: list[GetEventData] = Field(default_factory=list)
+
+
+class GetUserEventsResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetUserEventsData | None = None

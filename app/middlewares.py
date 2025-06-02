@@ -46,7 +46,8 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             user_id = request.cookies.get("user_id")
 
         else:
-            user_id = await self.get_user_id(request.cookies)
+            gather_access_token = request.headers.get("gather_access_token", request.cookies.get("gather_access_token"))
+            user_id = await self.get_user_id({**request.cookies, "gather_access_token": gather_access_token})
 
             if not user_id:
                 return JSONResponse(
