@@ -50,7 +50,7 @@ async def create_member(
     )
 
 
-@member_router.post(
+@member_router.put(
     path="/update",
     response_model=UpdateMemberResponse,
     description="Update member",
