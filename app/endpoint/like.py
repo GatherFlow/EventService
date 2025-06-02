@@ -36,7 +36,7 @@ async def create_event(
                         Like.user_id == request.state.user_id,
                     )
                 )
-            )).scalars().one_or_none()
+            )).scalars().first()
 
             if like:
                 await session.delete(like)
