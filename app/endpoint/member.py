@@ -95,7 +95,7 @@ async def update_member(
 async def gen_users_dict(user_ids, cookies: dict) -> GetMemberData:
     async with aiohttp.ClientSession() as session:
         async with session.get(
-            url=f"{get_settings()}/users/many",
+            url=f"{get_settings().services.user}/users/many",
             params={"ids": user_ids},
             cookies=cookies,
         ) as response:
