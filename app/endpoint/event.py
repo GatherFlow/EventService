@@ -79,7 +79,7 @@ async def create_event(
     )
 
 
-@event_router.post(
+@event_router.put(
     path="/update",
     response_model=UpdateEventResponse,
     description="Update event",
