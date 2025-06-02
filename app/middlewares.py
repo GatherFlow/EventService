@@ -42,7 +42,10 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             return response
 
         key = request.cookies.get("api_key")
-        if key != get_settings().app.key:
+        if key == get_settings().app.key:
+            user_id = request.cookies.get("user_id")
+
+        else:
             user_id = await self.get_user_id(request.cookies)
 
             if not user_id:
@@ -51,7 +54,7 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
                     content={"detail": f"You are not allowed to access this endpoint"}
                 )
 
-            request.state.user_id = user_id
+        request.state.user_id = user_id
 
         response = await call_next(request)
         return response
