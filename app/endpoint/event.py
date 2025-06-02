@@ -277,6 +277,45 @@ async def get_mine_events(
 
 
 @event_router.get(
+    path="/liked",
+    response_model=GetManyEventsResponse,
+    description="Get liked events",
+)
+async def get_liked_events(
+    request: fastapi.Request,
+) -> GetManyEventsResponse:
+
+    response_data = []
+
+    try:
+        async with get_async_session() as session:
+            likes = (await session.execute(
+                select(Like)
+                .where(Like.user_id == request.state.user_id)
+            )).scalars().all()
+            event_ids = list(map(lambda x: x.event_id, likes))
+
+            events = (await session.execute(
+                select(Event)
+                .where(Event.id.in_(event_ids))
+            )).scalars().all()
+
+            for event in events:
+                response_data.append(await gen_response_event(event, session))
+
+    except Exception as err:
+        logger.exception(err)
+        return GetManyEventsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetManyEventsResponse(
+        data=response_data
+    )
+
+
+@event_router.get(
     path="/search",
     response_model=GetManyEventsResponse,
     description="Search events",
@@ -321,7 +360,7 @@ async def search_events(
     response_model=GetMyStatsResponse,
     description="Get my events stats",
 )
-async def get_my_stats(
+async def get_my_event_stats(
     request: fastapi.Request
 ) -> GetMyStatsResponse:
 
@@ -366,7 +405,7 @@ async def get_my_stats(
     response_model=GetEventStatsResponse,
     description="Get event stats",
 )
-async def search_events(
+async def get_event_stats(
     event_id: int
 ) -> GetEventStatsResponse:
 
