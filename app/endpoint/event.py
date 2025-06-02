@@ -199,7 +199,7 @@ async def get_event(
 @event_router.delete(
     path="/",
     response_model=DeleteEventResponse,
-    description="Get event",
+    description="Delete event",
 )
 async def delete_event(
     id: int
