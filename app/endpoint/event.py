@@ -152,6 +152,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
 
     event_dict = event.__dict__
     event_dict["starting_time"] = round(event.starting_time.timestamp())
+    event_dict["announced_at"] = round(event.announced_at.timestamp())
 
     return GetEventData(
         **event_dict,

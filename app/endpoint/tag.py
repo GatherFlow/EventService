@@ -1,5 +1,6 @@
 
 import fastapi
+from loguru import logger
 
 from sqlalchemy import select, delete
 
@@ -7,7 +8,7 @@ from app.enum import ResponseStatus
 from app.model import Tag, EventTag
 
 from app.schema.request import UpdateTagRequest
-from app.schema.response import UpdateTagResponse, SearchTagResponse
+from app.schema.response import UpdateTagResponse, SearchTagResponse, UpdateTagData, GetTicketResponse
 
 from app.database import get_async_session
 
@@ -24,33 +25,105 @@ async def create_event(
     data: UpdateTagRequest
 ) -> UpdateTagResponse:
 
-    tag_names = list(map(lambda x: f"#{x}" if not x.startswith("#") else x, data.tags))
+    try:
 
-    async with get_async_session() as session:
-        tags = (await session.execute(
-            select(Tag)
-            .where(Tag.name.in_(tag_names))
-        )).scalars().all()
+        tag_names = [
+            f"#{tag.lower()}" if not tag.startswith("#") else tag.lower()
+            for tag in data.tags
+        ]
 
-        tags_dict = {
-            tag.name: tag
-            for tag in tags
-        }
+        async with get_async_session() as session:
+            tags = (await session.execute(
+                select(Tag)
+                .where(Tag.name.in_(tag_names))
+            )).scalars().all()
 
-        for tag_name in tag_names:
-            if tag_name in tags_dict:
-                continue
+            tags_dict = {
+                tag.name: tag
+                for tag in tags
+            }
 
-            tag = Tag(name=tag_name)
-            tags_dict.update({tag_name: tag})
+            for tag_name in tag_names:
+                if tag_name in tags_dict:
+                    continue
 
-            session.add(tag)
-            await session.flush()
+                tag = Tag(name=tag_name)
+                tags_dict.update({tag_name: tag})
 
-        await session.execute(
-            delete(EventTag)
-            .where(EventTag.event_id == 1)
+                session.add(tag)
+                await session.flush()
+
+            await session.execute(
+                delete(EventTag)
+                .where(EventTag.event_id == data.event_id)
+            )
+
+            event_tags = []
+
+            for tag_name in tag_names:
+                event_tag = EventTag(
+                    tag_id=tags_dict[tag_name],
+                    event_id=data.event_id
+                )
+                event_tags.append(event_tag)
+
+                session.add(event_tag)
+                await session.flush()
+
+            await session.commit()
+
+    except Exception as err:
+        logger.exception(err)
+        return UpdateTagResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
         )
 
-        for tag_name in tag_names:
-            event_tag = EventTag()
+    return UpdateTagResponse(
+        data=[
+            UpdateTagData(id=tag.id)
+            for tag in event_tags
+        ]
+    )
+
+
+@tag_router.get(
+    path="/search",
+    response_model=GetTicketResponse,
+    description="Search events",
+)
+async def search_events(
+    query: str
+) -> GetTicketResponse:
+
+    parts = query.split("# ")
+
+    """
+    qwe #qwe #q
+    """
+
+    response_data = []
+
+    try:
+        async with get_async_session() as session:
+            tags = (await session.execute(
+                select(Tag)
+                .where(
+                    func.lower(Event.title).op('%')(query)
+                )
+            )).scalars().unique().all()
+
+            for event in events:
+                response_data.append(tag)
+
+    except Exception as err:
+        logger.exception(err)
+        return GetTicketResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetTicketResponse(
+        data=response_data
+    )
+
