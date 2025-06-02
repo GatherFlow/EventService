@@ -99,7 +99,7 @@ async def update_event(
                 update(Event)
                 .where(Event.id == data.id)
                 .values(**{
-                    key: data_dict[key] if key != "starting_time" else datetime.fromtimestamp(data_dict[key])
+                    key: datetime.fromtimestamp(data_dict[key]) if key == "starting_time" and data_dict[key] else data_dict[key]
                     for key in data_dict if key not in ["id"] and data_dict.get(key)
                 })
                 .execution_options(synchronize_session="fetch")
@@ -151,8 +151,11 @@ async def gen_response_event(event: Event, session: AsyncSession):
             select(func.count()).select_from(Like).where(event.id == event.id)
         )).scalar()
 
+    event_dict = event.__dict__
+    event_dict["starting_time"] = int(event.starting_time.timestamp())
+
     return GetEventData(
-        **event.__dict__,
+        **event_dict,
         likes=likes,
         bought=0,
         tags=list(map(lambda x: x.name, tags)),
