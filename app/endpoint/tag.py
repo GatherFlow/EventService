@@ -21,6 +21,9 @@ tag_router = fastapi.APIRouter(prefix="/tag", tags=["tag"])
 
 
 async def update_tags(tags: list[str], event_id: int, session: AsyncSession) -> list[EventTag]:
+    if not len(tags):
+        return []
+
     tag_names = [
         f"#{tag.lower()}" if not tag.startswith("#") else tag.lower()
         for tag in tags
