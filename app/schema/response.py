@@ -184,28 +184,28 @@ class StopGatheringEventResponse(BaseModel):
     data: StopGatheringEventData | None = None
 
 
-class CreateTicketResponse(BaseModel):
+class CreateEventTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
     data: CreateEventTicketData | None = None
 
 
-class UpdateTicketResponse(BaseModel):
+class UpdateEventTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
     data: UpdateEventTicketData | None = None
 
 
-class GetTicketResponse(BaseModel):
+class GetEventTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
     data: GetEventTicketData | None = None
 
 
-class GetManyTicketResponse(BaseModel):
+class GetManyEventTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
@@ -294,7 +294,7 @@ class DeleteRestrictionResponse(BaseModel):
     description: str | None = None
 
 
-class DeleteTicketResponse(BaseModel):
+class DeleteEventTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 

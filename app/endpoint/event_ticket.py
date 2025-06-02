@@ -7,12 +7,12 @@ from sqlalchemy import select, update
 from app.enum import ResponseStatus
 from app.model import EventTicket
 
-from app.schema.request import CreateTicketRequest, UpdateTicketRequest
+from app.schema.request import CreateEventTicketRequest, UpdateEventTicketRequest
 from app.schema.response import (
-    CreateTicketResponse, UpdateTicketResponse,
+    CreateEventTicketResponse, UpdateEventTicketResponse,
     CreateEventTicketData, UpdateEventTicketData,
-    DeleteTicketResponse,
-    GetTicketResponse, GetManyTicketResponse,
+    DeleteEventTicketResponse,
+    GetEventTicketResponse, GetManyEventTicketResponse,
     GetEventTicketData
 )
 
@@ -24,12 +24,12 @@ event_ticket_router = fastapi.APIRouter(prefix="/event_ticket")
 
 @event_ticket_router.post(
     path="/create",
-    response_model=CreateTicketResponse,
+    response_model=CreateEventTicketResponse,
     description="Create new event ticket",
 )
 async def create_ticket(
-    data: CreateTicketRequest,
-) -> CreateTicketResponse:
+    data: CreateEventTicketRequest,
+) -> CreateEventTicketResponse:
 
     try:
         async with get_async_session() as session:
@@ -46,12 +46,12 @@ async def create_ticket(
 
     except Exception as err:
         logger.exception(err)
-        return CreateTicketResponse(
+        return CreateEventTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return CreateTicketResponse(
+    return CreateEventTicketResponse(
         data=CreateEventTicketData(
             id=ticket.id
         )
@@ -60,12 +60,12 @@ async def create_ticket(
 
 @event_ticket_router.get(
     path="/",
-    response_model=GetTicketResponse,
+    response_model=GetEventTicketResponse,
     description="Get event ticket",
 )
 async def get_ticket(
     id: int,
-) -> GetTicketResponse:
+) -> GetEventTicketResponse:
 
     try:
         async with get_async_session() as session:
@@ -73,24 +73,24 @@ async def get_ticket(
 
     except Exception as err:
         logger.exception(err)
-        return GetTicketResponse(
+        return GetEventTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetTicketResponse(
+    return GetEventTicketResponse(
         data=GetEventTicketData(**ticket.__dict__)
     )
 
 
 @event_ticket_router.delete(
     path="/delete",
-    response_model=DeleteTicketResponse,
+    response_model=DeleteEventTicketResponse,
     description="Delete event ticket",
 )
 async def delete_ticket(
     id: int,
-) -> DeleteTicketResponse:
+) -> DeleteEventTicketResponse:
 
     try:
         async with get_async_session() as session:
@@ -100,22 +100,22 @@ async def delete_ticket(
 
     except Exception as err:
         logger.exception(err)
-        return DeleteTicketResponse(
+        return DeleteEventTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return DeleteTicketResponse()
+    return DeleteEventTicketResponse()
 
 
 @event_ticket_router.put(
     path="/update",
-    response_model=UpdateTicketResponse,
+    response_model=UpdateEventTicketResponse,
     description="Update ticket",
 )
 async def create_event(
-    data: UpdateTicketRequest
-) -> UpdateTicketResponse:
+    data: UpdateEventTicketRequest
+) -> UpdateEventTicketResponse:
 
     try:
         async with get_async_session() as session:
@@ -135,12 +135,12 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return UpdateTicketResponse(
+        return UpdateEventTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return UpdateTicketResponse(
+    return UpdateEventTicketResponse(
         data=UpdateEventTicketData(
             id=data.id
         )
@@ -149,12 +149,12 @@ async def create_event(
 
 @event_ticket_router.get(
     path="/many",
-    response_model=GetManyTicketResponse,
+    response_model=GetManyEventTicketResponse,
     description="Get many event tickets",
 )
 async def create_event(
     event_id: int
-) -> GetManyTicketResponse:
+) -> GetManyEventTicketResponse:
 
     try:
         async with get_async_session() as session:
@@ -165,12 +165,12 @@ async def create_event(
 
     except Exception as err:
         logger.exception(err)
-        return GetManyTicketResponse(
+        return GetManyEventTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetManyTicketResponse(
+    return GetManyEventTicketResponse(
         data=[
             GetEventTicketData(**ticket.__dict__)
             for ticket in tickets

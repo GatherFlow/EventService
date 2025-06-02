@@ -53,7 +53,7 @@ class StopGatheringEventRequest(BaseModel):
     event_id: int
 
 
-class CreateTicketRequest(BaseModel):
+class CreateEventTicketRequest(BaseModel):
     event_id: int
     title: str
     description: str
@@ -62,7 +62,7 @@ class CreateTicketRequest(BaseModel):
     stock: int
 
 
-class UpdateTicketRequest(BaseModel):
+class UpdateEventTicketRequest(BaseModel):
     id: int
     title: str | None = None
     description: str | None = None
@@ -97,3 +97,8 @@ class UpdateRestrictionRequest(BaseModel):
     id: int
     action: RestrictionAction | None = None
     value: dict | None = None
+
+
+class CreateTicketRequest(BaseModel):
+    event_id: int
+    user_id: str
