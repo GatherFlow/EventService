@@ -19,7 +19,7 @@ from app.schema.response import (
 from app.database import get_async_session
 
 
-ticket_router = fastapi.APIRouter(prefix="/ticket", tag=["ticket"])
+ticket_router = fastapi.APIRouter(prefix="/ticket", tags=["ticket"])
 
 
 @ticket_router.post(
