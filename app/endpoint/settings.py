@@ -1,11 +1,12 @@
 
 import fastapi
+from datetime import datetime, timezone
 from loguru import logger
 
 from sqlalchemy import select, update
 
 from app.enum import ResponseStatus
-from app.model import EventSettings
+from app.model import EventSettings, Event
 
 from app.schema.request import AnnounceEventRequest, StopGatheringEventRequest
 from app.schema.response import AnnouncedEventResponse, StopGatheringEventResponse
@@ -20,7 +21,7 @@ settings_router = fastapi.APIRouter(prefix="/settings")
 @settings_router.post(
     path="/announce",
     response_model=AnnouncedEventResponse,
-    description="Announce/Unannouce event",
+    description="Announce event",
 )
 async def create_event(
     data: AnnounceEventRequest,
@@ -35,15 +36,28 @@ async def create_event(
                 )
             )).scalars().first()
 
-            settings.is_announced = not settings.is_announced
+            if not settings.is_announced:
+                settings.is_gathering = True
+                settings.is_announced = not settings.is_announced
 
-            await session.execute(
-                update(EventSettings)
-                .where(EventSettings.id == settings.id)
-                .values(is_announced=settings.is_announced)
-                .execution_options(synchronize_session="fetch")
-            )
-            await session.commit()
+                await session.execute(
+                    update(EventSettings)
+                    .where(EventSettings.id == settings.id)
+                    .values(is_announced=settings.is_announced, is_gathering=settings.is_gathering)
+                    .execution_options(synchronize_session="fetch")
+                )
+
+                event = await session.get(Event, settings.event_id)
+                event.announced_at = datetime.now(timezone.utc)
+
+                await session.execute(
+                    update(Event)
+                    .where(Event.id == event.id)
+                    .values(announced_at=event.announced_at)
+                    .execution_options(synchronize_session="fetch")
+                )
+
+                await session.commit()
 
     except Exception as err:
         logger.exception(err)
@@ -54,7 +68,8 @@ async def create_event(
 
     return AnnouncedEventResponse(
         data=AnnouncedEventData(
-            is_announced=settings.is_announced
+            is_announced=settings.is_announced,
+            is_gathering=settings.is_gathering
         )
     )
 
