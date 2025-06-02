@@ -5,13 +5,15 @@ from loguru import logger
 from sqlalchemy import select, update
 
 from app.enum import ResponseStatus
-from app.model import EventTicket
+from app.model import Ticket
 
-from app.schema.request import CreateEventTicketRequest
+from app.schema.request import CreateTicketRequest
 from app.schema.response import (
     CreateTicketResponse, DeleteTicketResponse,
     GetTicketResponse, GetManyTicketResponse,
-    GetTicketData
+)
+from app.schema.response import (
+    CreateTicketData, GetTicketData
 )
 
 from app.database import get_async_session
@@ -26,81 +28,108 @@ ticket_router = fastapi.APIRouter(prefix="/ticket", tag=["ticket"])
     description="Create new ticket",
 )
 async def create_ticket(
-    data: CreateEventTicketRequest,
+    data: CreateTicketRequest,
 ) -> CreateTicketResponse:
 
     try:
         async with get_async_session() as session:
-            ticket = EventTicket(
-                event_id=data.event_id,
-                title=data.title,
-                description=data.description,
-                price=data.price,
-                amount=data.amount,
-                stock=data.stock
+            ticket = Ticket(
+                event_ticket_id=data.event_ticket_id,
+                user_id=data.user_id
             )
             session.add(ticket)
             await session.commit()
 
     except Exception as err:
         logger.exception(err)
-        return CreateEventTicketResponse(
+        return CreateTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return CreateEventTicketResponse(
+    return CreateTicketResponse(
         data=CreateTicketData(
             id=ticket.id
         )
     )
 
 
-@ticket_router.get(
-    path="/",
-    response_model=GetEventTicketResponse,
-    description="Get event ticket",
+@ticket_router.delete(
+    path="/delete",
+    response_model=GetTicketResponse,
+    description="Delete ticket",
 )
-async def get_ticket(
+async def delete_ticket(
     id: int,
-) -> GetEventTicketResponse:
+) -> GetTicketResponse:
 
     try:
         async with get_async_session() as session:
-            ticket = await session.get(EventTicket, id)
+            ticket = await session.get(Ticket, id)
+            await session.delete(ticket)
+            await session.commit()
 
     except Exception as err:
         logger.exception(err)
-        return GetEventTicketResponse(
+        return DeleteTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetEventTicketResponse(
-        data=GetEventTicketData(**ticket.__dict__)
+    return DeleteTicketResponse()
+
+
+@ticket_router.get(
+    path="/",
+    response_model=GetTicketResponse,
+    description="Get ticket",
+)
+async def get_ticket(
+    id: int,
+) -> GetTicketResponse:
+
+    try:
+        async with get_async_session() as session:
+            ticket = await session.get(Ticket, id)
+
+    except Exception as err:
+        logger.exception(err)
+        return GetTicketResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetTicketResponse(
+        data=GetTicketData(**ticket.__dict__)
     )
 
 
 @ticket_router.get(
-    path="/",
-    response_model=GetEventTicketResponse,
+    path="/many",
+    response_model=GetTicketResponse,
     description="Get many tickets",
 )
 async def get_ticket(
-    id: int,
-) -> GetEventTicketResponse:
+    event_ticket_id: int
+) -> GetTicketResponse:
 
     try:
         async with get_async_session() as session:
-            ticket = await session.get(EventTicket, id)
+            tickets = await session.execute([
+                select(Ticket)
+                .where(Ticket.event_ticket_id == event_ticket_id)
+            ])
 
     except Exception as err:
         logger.exception(err)
-        return GetEventTicketResponse(
+        return GetManyTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetEventTicketResponse(
-        data=GetEventTicketData(**ticket.__dict__)
+    return GetManyTicketResponse(
+        data=[
+            GetTicketData(**ticket.__dict__)
+            for ticket in tickets
+        ]
     )

@@ -169,7 +169,8 @@ async def gen_response_event(event: Event, session: AsyncSession):
                 title=event_ticket.title,
                 description=event_ticket.description,
                 price=event_ticket.price,
-                stock=event_ticket.stock
+                stock=event_ticket.stock,
+                amount=event_ticket.amount
             )
             for event_ticket in event_tickets
         ]

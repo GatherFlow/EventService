@@ -8,3 +8,4 @@ from .settings import EventSettings
 from .event_ticket import EventTicket
 from .like import Like
 from .member import Member
+from .ticket import Ticket

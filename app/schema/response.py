@@ -17,6 +17,7 @@ class GetEventTicketData(BaseModel):
     title: str
     description: str
     price: float
+    amount: int
     stock: int
 
 

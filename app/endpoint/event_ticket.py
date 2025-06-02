@@ -27,7 +27,7 @@ event_ticket_router = fastapi.APIRouter(prefix="/event_ticket", tags=["event_tic
     response_model=CreateEventTicketResponse,
     description="Create new event ticket",
 )
-async def create_ticket(
+async def create_event_ticket(
     data: CreateEventTicketRequest,
 ) -> CreateEventTicketResponse:
 
@@ -63,7 +63,7 @@ async def create_ticket(
     response_model=GetEventTicketResponse,
     description="Get event ticket",
 )
-async def get_ticket(
+async def get_event_ticket(
     id: int,
 ) -> GetEventTicketResponse:
 
@@ -88,7 +88,7 @@ async def get_ticket(
     response_model=DeleteEventTicketResponse,
     description="Delete event ticket",
 )
-async def delete_ticket(
+async def delete_event_ticket(
     id: int,
 ) -> DeleteEventTicketResponse:
 
@@ -113,7 +113,7 @@ async def delete_ticket(
     response_model=UpdateEventTicketResponse,
     description="Update ticket",
 )
-async def create_event(
+async def update_event_ticket(
     data: UpdateEventTicketRequest
 ) -> UpdateEventTicketResponse:
 
@@ -152,7 +152,7 @@ async def create_event(
     response_model=GetManyEventTicketResponse,
     description="Get many event tickets",
 )
-async def create_event(
+async def get_many_event_tickets(
     event_id: int
 ) -> GetManyEventTicketResponse:
 
