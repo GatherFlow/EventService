@@ -41,15 +41,17 @@ class CheckAuthMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
             return response
 
-        user_id = await self.get_user_id(request.cookies)
+        key = request.cookies.get("api_key")
+        if key != get_settings().app.key:
+            user_id = await self.get_user_id(request.cookies)
 
-        if not user_id:
-            return JSONResponse(
-                status_code=401,
-                content={"detail": f"You are not allowed to access this endpoint"}
-            )
+            if not user_id:
+                return JSONResponse(
+                    status_code=401,
+                    content={"detail": f"You are not allowed to access this endpoint"}
+                )
 
-        request.state.user_id = user_id
+            request.state.user_id = user_id
 
         response = await call_next(request)
         return response
