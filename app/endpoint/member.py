@@ -14,7 +14,7 @@ from app.schema.response import CreateMemberData
 from app.database import get_async_session
 
 
-member_router = fastapi.APIRouter(prefix="member")
+member_router = fastapi.APIRouter(prefix="/member")
 
 
 @member_router.put(

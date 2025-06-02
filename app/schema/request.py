@@ -80,3 +80,8 @@ class CreateMemberRequest(BaseModel):
 class UpdateMemberRequest(BaseModel):
     id: int
     role: MemberRole = None
+
+
+class UpdateTagRequest(BaseModel):
+    event_id: int
+    tags: list[str]

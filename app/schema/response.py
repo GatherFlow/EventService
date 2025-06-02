@@ -96,6 +96,15 @@ class GetMemberData(BaseModel):
     role: MemberRole
 
 
+class UpdateTagData(BaseModel):
+    id: list[int]
+
+
+class SearchTagData(BaseModel):
+    id: int
+    name: str
+
+
 class CreateEventResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
@@ -218,3 +227,17 @@ class GetManyMemberResponse(BaseModel):
     description: str | None = None
 
     data: list[GetMemberData] = Field(default_factory=list)
+
+
+class UpdateTagResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[UpdateTagData] = Field(default_factory=list)
+
+
+class SearchTagResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[SearchTagData] = Field(default_factory=list)

@@ -1,35 +1,56 @@
 
-from typing import Any
-
 import fastapi
-from datetime import datetime, timedelta
 
-from aiomonobnk.types import InvoiceCreated
+from sqlalchemy import select, delete
 
-from app.enum import CreateEventStatus
-from app.model import Event
+from app.enum import ResponseStatus
+from app.model import Tag, EventTag
 
-from app.schema.request import CreateEventRequest
-from app.schema.response import CreateEventResponse
+from app.schema.request import UpdateTagRequest
+from app.schema.response import UpdateTagResponse, SearchTagResponse
 
 from app.database import get_async_session
-from app.mono import mono_client
-
-from config import get_settings
 
 
-member_router = fastapi.APIRouter(prefix="member")
+tag_router = fastapi.APIRouter(prefix="/tag")
 
 
-@member_router.post(
+@tag_router.post(
     path="/update",
-    response_model=CreateEventResponse,
-    responses=CREATE_EVENT_RESPONSES,
-    description="Create new event",
+    response_model=UpdateTagResponse,
+    description="Update tags",
 )
 async def create_event(
-    data: CreateEventRequest,
-    response: fastapi.Response,
-) -> CreateEventResponse:
+    data: UpdateTagRequest
+) -> UpdateTagResponse:
 
-    pass
+    tag_names = list(map(lambda x: f"#{x}" if not x.startswith("#") else x, data.tags))
+
+    async with get_async_session() as session:
+        tags = (await session.execute(
+            select(Tag)
+            .where(Tag.name.in_(tag_names))
+        )).scalars().all()
+
+        tags_dict = {
+            tag.name: tag
+            for tag in tags
+        }
+
+        for tag_name in tag_names:
+            if tag_name in tags_dict:
+                continue
+
+            tag = Tag(name=tag_name)
+            tags_dict.update({tag_name: tag})
+
+            session.add(tag)
+            await session.flush()
+
+        await session.execute(
+            delete(EventTag)
+            .where(EventTag.event_id == 1)
+        )
+
+        for tag_name in tag_names:
+            event_tag = EventTag()
