@@ -8,7 +8,7 @@ from . import BaseModel
 class EventTicket(BaseModel):
     __tablename__ = 'EventTicket'
 
-    event_ticket_id: Mapped[int] = mapped_column(
+    event_id: Mapped[int] = mapped_column(
         Integer, ForeignKey('Event.id', ondelete="CASCADE"), nullable=False
     )
     title: Mapped[str] = mapped_column(

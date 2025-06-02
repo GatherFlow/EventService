@@ -51,16 +51,6 @@ class UpdateEventTicketData(BaseModel):
     id: int
 
 
-class GetEventTicketData(BaseModel):
-    id: int
-    event_id: int
-    title: str
-    description: str
-    price: float
-    amount: int
-    stock: int
-
-
 class AddAlbumData(BaseModel):
     url: str
 

@@ -9,9 +9,9 @@ from app.model import EventTicket
 
 from app.schema.request import CreateEventTicketRequest
 from app.schema.response import (
-    CreateEventTicketResponse, DeleteEventTicketResponse,
-    GetEventTicketResponse, GetManyEventTicketResponse,
-    GetEventTicketData
+    CreateTicketResponse, DeleteTicketResponse,
+    GetTicketResponse, GetManyTicketResponse,
+    GetTicketData
 )
 
 from app.database import get_async_session
@@ -22,12 +22,12 @@ ticket_router = fastapi.APIRouter(prefix="/ticket", tag=["ticket"])
 
 @ticket_router.post(
     path="/create",
-    response_model=CreateEventTicketResponse,
+    response_model=CreateTicketResponse,
     description="Create new ticket",
 )
 async def create_ticket(
     data: CreateEventTicketRequest,
-) -> CreateEventTicketResponse:
+) -> CreateTicketResponse:
 
     try:
         async with get_async_session() as session:
