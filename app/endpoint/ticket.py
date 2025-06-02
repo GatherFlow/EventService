@@ -7,25 +7,23 @@ from sqlalchemy import select, update
 from app.enum import ResponseStatus
 from app.model import EventTicket
 
-from app.schema.request import CreateTicketRequest, UpdateTicketRequest
+from app.schema.request import CreateTicketRequest
 from app.schema.response import (
-    CreateTicketResponse, UpdateTicketResponse,
-    CreateTicketData, UpdateTicketData,
-    DeleteTicketResponse,
+    CreateTicketResponse, DeleteTicketResponse,
     GetTicketResponse, GetManyTicketResponse,
-    GetTicketData
+    GetEventTicketData
 )
 
 from app.database import get_async_session
 
 
-ticket_router = fastapi.APIRouter(prefix="/ticket")
+ticket_router = fastapi.APIRouter()
 
 
 @ticket_router.post(
     path="/create",
     response_model=CreateTicketResponse,
-    description="Create new event ticket",
+    description="Create new ticket",
 )
 async def create_ticket(
     data: CreateTicketRequest,
@@ -79,100 +77,30 @@ async def get_ticket(
         )
 
     return GetTicketResponse(
-        data=GetTicketData(**ticket.__dict__)
-    )
-
-
-@ticket_router.delete(
-    path="/delete",
-    response_model=DeleteTicketResponse,
-    description="Delete event ticket",
-)
-async def delete_ticket(
-    id: int,
-) -> DeleteTicketResponse:
-
-    try:
-        async with get_async_session() as session:
-            event = await session.get(EventTicket, id)
-            await session.delete(event)
-            await session.commit()
-
-    except Exception as err:
-        logger.exception(err)
-        return DeleteTicketResponse(
-            status=ResponseStatus.unexpected_error,
-            description=str(err)
-        )
-
-    return DeleteTicketResponse()
-
-
-@ticket_router.put(
-    path="/update",
-    response_model=UpdateTicketResponse,
-    description="Update ticket",
-)
-async def create_event(
-    data: UpdateTicketRequest
-) -> UpdateTicketResponse:
-
-    try:
-        async with get_async_session() as session:
-            data_dict = data.model_dump()
-
-            await session.execute(
-                update(EventTicket)
-                .where(EventTicket.id == data.id)
-                .values(**{
-                    key: data_dict[key]
-                    for key in data_dict if key not in ["id"] and data_dict.get(key)
-                })
-                .execution_options(synchronize_session="fetch")
-            )
-
-            await session.commit()
-
-    except Exception as err:
-        logger.exception(err)
-        return UpdateTicketResponse(
-            status=ResponseStatus.unexpected_error,
-            description=str(err)
-        )
-
-    return UpdateTicketResponse(
-        data=UpdateTicketData(
-            id=data.id
-        )
+        data=GetEventTicketData(**ticket.__dict__)
     )
 
 
 @ticket_router.get(
-    path="/many",
-    response_model=GetManyTicketResponse,
-    description="Get many event tickets",
+    path="/",
+    response_model=GetTicketResponse,
+    description="Get many tickets",
 )
-async def create_event(
-    event_id: int
-) -> GetManyTicketResponse:
+async def get_ticket(
+    id: int,
+) -> GetTicketResponse:
 
     try:
         async with get_async_session() as session:
-            tickets = (await session.execute(
-                select(EventTicket)
-                .where(EventTicket.event_id == event_id)
-            )).scalars().all()
+            ticket = await session.get(EventTicket, id)
 
     except Exception as err:
         logger.exception(err)
-        return GetManyTicketResponse(
+        return GetTicketResponse(
             status=ResponseStatus.unexpected_error,
             description=str(err)
         )
 
-    return GetManyTicketResponse(
-        data=[
-            GetTicketData(**ticket.__dict__)
-            for ticket in tickets
-        ]
+    return GetTicketResponse(
+        data=GetEventTicketData(**ticket.__dict__)
     )

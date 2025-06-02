@@ -43,15 +43,15 @@ class GetEventData(BaseModel):
     tickets: list[GetEventTicketData] = []
 
 
-class CreateTicketData(BaseModel):
+class CreateEventTicketData(BaseModel):
     id: int
 
 
-class UpdateTicketData(BaseModel):
+class UpdateEventTicketData(BaseModel):
     id: int
 
 
-class GetTicketData(BaseModel):
+class GetEventTicketData(BaseModel):
     id: int
     event_id: int
     title: str
@@ -188,28 +188,28 @@ class CreateTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
-    data: CreateTicketData | None = None
+    data: CreateEventTicketData | None = None
 
 
 class UpdateTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
-    data: UpdateTicketData | None = None
+    data: UpdateEventTicketData | None = None
 
 
 class GetTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
-    data: GetTicketData | None = None
+    data: GetEventTicketData | None = None
 
 
 class GetManyTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
 
-    data: list[GetTicketData] = Field(default_factory=list)
+    data: list[GetEventTicketData] = Field(default_factory=list)
 
 
 class GetSettingsResponse(BaseModel):
@@ -297,3 +297,39 @@ class DeleteRestrictionResponse(BaseModel):
 class DeleteTicketResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
+
+
+class CreateTicketData(BaseModel):
+    id: int
+
+
+class GetTicketData(BaseModel):
+    id: int
+    event_id: int
+    user_id: str
+
+
+class CreateTicketResponse(BaseModel):
+    status: ResponseStatus | None = ResponseStatus.ok
+    description: str | None = None
+
+    data: CreateTicketData | None = None
+
+
+class DeleteTicketResponse(BaseModel):
+    status: ResponseStatus | None = ResponseStatus.ok
+    description: str | None = None
+
+
+class GetTicketResponse(BaseModel):
+    status: ResponseStatus | None = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetTicketData | None = None
+
+
+class GetManyTicketResponse(BaseModel):
+    status: ResponseStatus | None = ResponseStatus.ok
+    description: str | None = None
+
+    data: list[GetTicketData] = Field(default_factory=list)

@@ -23,5 +23,5 @@ jobs:
             git reset --hard
             git pull origin main
             docker compose down --volumes event-service
-            docker compose up -d --build event-service
+            docker compose up -d --build
           EOF
