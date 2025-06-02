@@ -169,7 +169,7 @@ async def gen_response_event(event: Event, session: AsyncSession):
 
 @event_router.get(
     path="/",
-    response_model=GetEventRequest,
+    response_model=GetEventResponse,
     description="Get event",
 )
 async def create_event(
@@ -195,6 +195,7 @@ async def create_event(
 
 @event_router.get(
     path="/mine",
+    response_model=GetManyEventsResponse,
     description="Get my events",
 )
 async def create_event(
@@ -240,6 +241,7 @@ async def create_event(
 
 @event_router.get(
     path="/search",
+    response_model=GetManyEventsResponse,
     description="Search events",
 )
 async def create_event(
