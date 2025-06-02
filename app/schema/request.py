@@ -11,6 +11,7 @@ class CreateEventRequest(BaseModel):
     meeting_link: str | None = None
     location: str | None = None
     starting_time: int | None = None
+    tags: list[str] = []
 
 
 class UpdateEventRequest(BaseModel):
@@ -22,6 +23,7 @@ class UpdateEventRequest(BaseModel):
     meeting_link: str | None = None
     location: str | None = None
     starting_time: int | None = None
+    tags: list[str] = []
 
 
 class GetEventRequest(BaseModel):

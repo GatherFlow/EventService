@@ -5,6 +5,7 @@ import re
 from loguru import logger
 
 from sqlalchemy import select, delete, func
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import ResponseStatus
 from app.model import Tag, EventTag
@@ -19,6 +20,52 @@ from app.database import get_async_session
 tag_router = fastapi.APIRouter(prefix="/tag", tags=["tag"])
 
 
+async def update_tags(tags: list[str], event_id: int, session: AsyncSession) -> list[EventTag]:
+    tag_names = [
+        f"#{tag.lower()}" if not tag.startswith("#") else tag.lower()
+        for tag in tags
+    ]
+
+    tags = (await session.execute(
+        select(Tag)
+        .where(Tag.name.in_(tag_names))
+    )).scalars().all()
+
+    tags_dict = {
+        tag.name: tag
+        for tag in tags
+    }
+
+    for tag_name in tag_names:
+        if tag_name in tags_dict:
+            continue
+
+        tag = Tag(name=tag_name)
+        tags_dict.update({tag_name: tag})
+
+        session.add(tag)
+        await session.flush()
+
+    await session.execute(
+        delete(EventTag)
+        .where(EventTag.event_id == event_id)
+    )
+
+    event_tags = []
+
+    for tag_name in tag_names:
+        event_tag = EventTag(
+            tag_id=tags_dict[tag_name],
+            event_id=event_id
+        )
+        event_tags.append(event_tag)
+
+        session.add(event_tag)
+        await session.flush()
+
+    return event_tags
+
+
 @tag_router.put(
     path="/update",
     response_model=UpdateTagResponse,
@@ -30,49 +77,12 @@ async def create_event(
 
     try:
 
-        tag_names = [
-            f"#{tag.lower()}" if not tag.startswith("#") else tag.lower()
-            for tag in data.tags
-        ]
-
         async with get_async_session() as session:
-            tags = (await session.execute(
-                select(Tag)
-                .where(Tag.name.in_(tag_names))
-            )).scalars().all()
-
-            tags_dict = {
-                tag.name: tag
-                for tag in tags
-            }
-
-            for tag_name in tag_names:
-                if tag_name in tags_dict:
-                    continue
-
-                tag = Tag(name=tag_name)
-                tags_dict.update({tag_name: tag})
-
-                session.add(tag)
-                await session.flush()
-
-            await session.execute(
-                delete(EventTag)
-                .where(EventTag.event_id == data.event_id)
+            event_tags = await update_tags(
+                tags=data.tags,
+                event_id=data.event_id,
+                session=session
             )
-
-            event_tags = []
-
-            for tag_name in tag_names:
-                event_tag = EventTag(
-                    tag_id=tags_dict[tag_name],
-                    event_id=data.event_id
-                )
-                event_tags.append(event_tag)
-
-                session.add(event_tag)
-                await session.flush()
-
             await session.commit()
 
     except Exception as err:

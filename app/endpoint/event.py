@@ -9,6 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import MemberRole, ResponseStatus
 from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTicket, EventAlbum, Ticket, SearchQuery
+from app.endpoint.tag import update_tags
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest
@@ -70,6 +71,13 @@ async def create_event(
             )
 
             session.add(member)
+
+            await update_tags(
+                tags=data.tags,
+                event_id=event.id,
+                session=session
+            )
+
             await session.commit()
 
     except Exception as err:
@@ -107,6 +115,12 @@ async def update_event(
                     for key in data_dict if key not in ["id"] and data_dict.get(key)
                 })
                 .execution_options(synchronize_session="fetch")
+            )
+
+            await update_tags(
+                tags=data.tags,
+                event_id=data.id,
+                session=session
             )
 
             await session.commit()
