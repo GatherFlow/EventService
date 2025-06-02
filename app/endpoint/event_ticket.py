@@ -19,7 +19,7 @@ from app.schema.response import (
 from app.database import get_async_session
 
 
-event_ticket_router = fastapi.APIRouter(prefix="/event_ticket")
+event_ticket_router = fastapi.APIRouter(prefix="/event_ticket", tags=["event_ticket"])
 
 
 @event_ticket_router.post(

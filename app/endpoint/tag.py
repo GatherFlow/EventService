@@ -16,7 +16,7 @@ from app.schema.response import UpdateTagData, SearchTagData
 from app.database import get_async_session
 
 
-tag_router = fastapi.APIRouter(prefix="/tag")
+tag_router = fastapi.APIRouter(prefix="/tag", tags=["tag"])
 
 
 @tag_router.put(

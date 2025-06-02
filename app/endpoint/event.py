@@ -25,7 +25,7 @@ from app.schema.response import (
 from app.database import get_async_session
 
 
-event_router = fastapi.APIRouter()
+event_router = fastapi.APIRouter(tags=['event'])
 
 
 @event_router.post(

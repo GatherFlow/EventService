@@ -23,7 +23,7 @@ from app.schema.response import (
 from app.database import get_async_session
 
 
-restriction_router = fastapi.APIRouter(prefix="/restriction")
+restriction_router = fastapi.APIRouter(prefix="/restriction", tags=['restriction'])
 
 
 @restriction_router.post(

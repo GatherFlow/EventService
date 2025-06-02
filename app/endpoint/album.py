@@ -18,7 +18,7 @@ from app.schema.response import AddAlbumResponse, AddAlbumData
 from app.database import get_async_session
 
 
-album_router = fastapi.APIRouter(prefix="/album")
+album_router = fastapi.APIRouter(prefix="/album", tags=["album"])
 
 
 @album_router.get(

@@ -17,7 +17,7 @@ from app.database import get_async_session
 from config import get_settings
 
 
-member_router = fastapi.APIRouter(prefix="/member")
+member_router = fastapi.APIRouter(prefix="/member", tags=["member"])
 
 
 @member_router.post(

@@ -15,7 +15,7 @@ from app.schema.response import AnnouncedEventData, StopGatheringEventData, GetS
 from app.database import get_async_session
 
 
-settings_router = fastapi.APIRouter(prefix="/settings")
+settings_router = fastapi.APIRouter(prefix="/settings", tags=["settings"])
 
 
 @settings_router.get(
