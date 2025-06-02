@@ -151,8 +151,11 @@ async def gen_response_event(event: Event, session: AsyncSession):
         )).scalar()
 
     event_dict = event.__dict__
-    event_dict["starting_time"] = round(event.starting_time.timestamp())
-    event_dict["announced_at"] = round(event.announced_at.timestamp())
+    if event_dict["starting_time"]:
+        event_dict["starting_time"] = round(event.starting_time.timestamp())
+
+    if event_dict["announced_at"]:
+        event_dict["announced_at"] = round(event.announced_at.timestamp())
 
     return GetEventData(
         **event_dict,
