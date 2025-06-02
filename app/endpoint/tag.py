@@ -19,7 +19,7 @@ from app.database import get_async_session
 tag_router = fastapi.APIRouter(prefix="/tag")
 
 
-@tag_router.post(
+@tag_router.put(
     path="/update",
     response_model=UpdateTagResponse,
     description="Update tags",
