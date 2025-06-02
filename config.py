@@ -31,6 +31,7 @@ class Updater(BaseModel):
 
 class Services(BaseModel):
     user: str
+    user_key: str
 
 
 class Settings(BaseSettings):
