@@ -327,8 +327,8 @@ class GetManyTicketResponse(BaseModel):
 
 
 class GetMyStatsData(BaseModel):
-    total_event: int
-    total_attendance: int
+    total_events: int
+    total_members: int
 
 
 class GetMyStatsResponse(BaseModel):
@@ -336,3 +336,14 @@ class GetMyStatsResponse(BaseModel):
     description: str | None = None
 
     data: GetMyStatsData | None = None
+
+
+class GetEventStatsData(BaseModel):
+    total_members: int
+
+
+class GetEventStatsResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetEventStatsData | None = None

@@ -15,12 +15,13 @@ from app.schema.request import (
 from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
     GetEventResponse, GetManyEventsResponse,
-    DeleteEventResponse, GetMyStatsResponse, GetMyStatsData
+    DeleteEventResponse, GetMyStatsResponse,
+    GetEventStatsResponse
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
     GetEventData, GetEventTicketData,
-    GetMyStatsResponse
+    GetMyStatsData, GetEventStatsData
 )
 
 from app.database import get_async_session
@@ -318,14 +319,32 @@ async def search_events(
 @event_router.get(
     path="/my_stats",
     response_model=GetMyStatsResponse,
-    description="Get my stats",
+    description="Get my events stats",
 )
-async def search_events(
+async def get_my_stats(
     request: fastapi.Request
 ) -> GetMyStatsResponse:
 
     try:
-        pass
+        async with get_async_session() as session:
+            owners = (await session.execute(
+                select(Member)
+                .where(
+                    and_(
+                        Member.user_id == request.state.user_id,
+                        Member.role == MemberRole.owner
+                    )
+                )
+            )).scalars().all()
+            event_ids = map(lambda x: x.event_id, owners)
+
+            events = (await session.execute(
+                select(func.count()).select_from(Event).where(Event.id.in_(event_ids))
+            )).scalar()
+
+            members = (await session.execute(
+                select(func.count()).select_from(Member).where(Member.event_id.in_(event_ids))
+            )).scalar()
 
     except Exception as err:
         logger.exception(err)
@@ -336,7 +355,36 @@ async def search_events(
 
     return GetMyStatsResponse(
         data=GetMyStatsData(
-            total_events=0,
-            total_attendance=0
+            total_events=events,
+            total_members=members
+        )
+    )
+
+
+@event_router.get(
+    path="/stats",
+    response_model=GetEventStatsResponse,
+    description="Get event stats",
+)
+async def search_events(
+    event_id: int
+) -> GetEventStatsResponse:
+
+    try:
+        async with get_async_session() as session:
+            members = (await session.execute(
+                select(func.count()).select_from(Member).where(Member.event_id.in_(event_id))
+            )).scalar()
+
+    except Exception as err:
+        logger.exception(err)
+        return GetEventStatsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetEventStatsResponse(
+        data=GetEventStatsData(
+            total_members=members
         )
     )
