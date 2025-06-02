@@ -65,7 +65,7 @@ async def create_event(
                 img=uuid4().hex
             )
 
-            with open(f"resources/images/{album.img}", "wb") as f:
+            with open(f"./resources/images/{album.img}", "wb") as f:
                 f.write(base64.b64decode(data.file))
 
             session.add(album)
@@ -81,6 +81,6 @@ async def create_event(
 
     return AddAlbumResponse(
         data=AddAlbumData(
-            url=f"https://bots.innova.ua/api/event/image/{album.img}"
+            url=f"https://bots.innova.ua/api/event/album/{album.img}"
         )
     )
