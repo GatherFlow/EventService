@@ -9,8 +9,7 @@ from app.model import Event, Member, EventSettings, Tag, EventTag, Like, EventTi
 
 from app.schema.request import (
     CreateEventRequest, UpdateEventRequest,
-    GetEventRequest, GetMyEventsRequest,
-    SearchEventRequest
+    GetEventRequest
 )
 from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
@@ -170,12 +169,12 @@ async def gen_response_event(event: Event, session: AsyncSession):
 
 @event_router.get(
     path="/",
-    response_model=GetEventResponse,
+    response_model=GetEventRequest,
     description="Get event",
 )
 async def create_event(
     id: int
-) -> CreateEventResponse:
+) -> GetEventResponse:
 
     try:
         async with get_async_session() as session:
@@ -196,7 +195,6 @@ async def create_event(
 
 @event_router.get(
     path="/mine",
-    response_model=GetManyEventsResponse,
     description="Get my events",
 )
 async def create_event(
@@ -242,7 +240,6 @@ async def create_event(
 
 @event_router.get(
     path="/search",
-    response_model=GetManyEventsResponse,
     description="Search events",
 )
 async def create_event(
