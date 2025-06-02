@@ -31,7 +31,7 @@ async def get_album(
 ):
 
     file_path = f"./resources/images/{album_id}"
-    if not os.path.isdir(file_path):
+    if not os.path.isfile(file_path):
         file_path = f"./resources/images/404.jpg"
 
     return FileResponse(path=file_path, media_type="image/jpeg", filename=f"image.jpg")
