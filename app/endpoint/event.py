@@ -3,7 +3,7 @@ from datetime import datetime
 
 import fastapi
 from loguru import logger
-from sqlalchemy import update, select, or_, func, and_
+from sqlalchemy import update, select, or_, func, and_, delete
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.enum import MemberRole, ResponseStatus
@@ -430,6 +430,32 @@ async def get_search_events(
             for query in queries
         ]
     )
+
+
+@event_router.post(
+    path="/search/history/drop",
+    response_model=DropSearchHistoryResponse,
+    description="Drop search history",
+)
+async def drop_search_events(
+    request: fastapi.Request
+) -> DropSearchHistoryResponse:
+
+    try:
+        async with get_async_session() as session:
+            await session.execute(
+                delete(SearchQuery)
+                .where(SearchQuery.user_id == request.state.user_id)
+            )
+
+    except Exception as err:
+        logger.exception(err)
+        return DropSearchHistoryResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return DropSearchHistoryResponse()
 
 
 @event_router.get(
