@@ -43,3 +43,11 @@ class LikeRequest(BaseModel):
 class AddAlbumRequest(BaseModel):
     event_id: int
     file: str
+
+
+class AnnounceEventRequest(BaseModel):
+    event_id: int
+
+
+class StopGatheringEventRequest(BaseModel):
+    event_id: int

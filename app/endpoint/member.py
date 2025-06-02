@@ -36,7 +36,7 @@ CREATE_EVENT_RESPONSES: dict[int | str, dict[str, Any]] = {
 }
 
 
-@member_router.post(
+@member_router.put(
     path="/create",
     response_model=CreateEventResponse,
     responses=CREATE_EVENT_RESPONSES,

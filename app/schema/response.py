@@ -47,6 +47,14 @@ class AddAlbumData(BaseModel):
     url: str
 
 
+class AnnouncedEventData(BaseModel):
+    is_announced: bool
+
+
+class StopGatheringEventData(BaseModel):
+    is_gathering: bool
+
+
 class CreateEventResponse(BaseModel):
     status: ResponseStatus = ResponseStatus.ok
     description: str | None = None
@@ -92,3 +100,17 @@ class AddAlbumResponse(BaseModel):
     description: str | None = None
 
     data: AddAlbumData | None = None
+
+
+class AnnouncedEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: AnnouncedEventData | None = None
+
+
+class StopGatheringEventResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: StopGatheringEventData | None = None
