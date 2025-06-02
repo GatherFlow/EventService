@@ -109,7 +109,7 @@ async def get_ticket(
     response_model=GetTicketResponse,
     description="Get many tickets",
 )
-async def get_ticket(
+async def get_many_ticket(
     event_ticket_id: int
 ) -> GetTicketResponse:
 
