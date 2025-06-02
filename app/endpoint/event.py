@@ -15,11 +15,12 @@ from app.schema.request import (
 from app.schema.response import (
     CreateEventResponse, UpdateEventResponse,
     GetEventResponse, GetManyEventsResponse,
-    DeleteEventResponse
+    DeleteEventResponse, GetMyStatsResponse, GetMyStatsData
 )
 from app.schema.response import (
     CreateEventData, UpdateEventData,
-    GetEventData, GetEventTicketData
+    GetEventData, GetEventTicketData,
+    GetMyStatsResponse
 )
 
 from app.database import get_async_session
@@ -311,4 +312,31 @@ async def search_events(
 
     return GetManyEventsResponse(
         data=response_data
+    )
+
+
+@event_router.get(
+    path="/my_stats",
+    response_model=GetMyStatsResponse,
+    description="Get my stats",
+)
+async def search_events(
+    request: fastapi.Request
+) -> GetMyStatsResponse:
+
+    try:
+        pass
+
+    except Exception as err:
+        logger.exception(err)
+        return GetMyStatsResponse(
+            status=ResponseStatus.unexpected_error,
+            description=str(err)
+        )
+
+    return GetMyStatsResponse(
+        data=GetMyStatsData(
+            total_events=0,
+            total_attendance=0
+        )
     )

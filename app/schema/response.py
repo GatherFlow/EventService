@@ -324,3 +324,15 @@ class GetManyTicketResponse(BaseModel):
     description: str | None = None
 
     data: list[GetTicketData] = Field(default_factory=list)
+
+
+class GetMyStatsData(BaseModel):
+    total_event: int
+    total_attendance: int
+
+
+class GetMyStatsResponse(BaseModel):
+    status: ResponseStatus = ResponseStatus.ok
+    description: str | None = None
+
+    data: GetMyStatsData | None = None
